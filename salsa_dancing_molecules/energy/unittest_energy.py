@@ -11,19 +11,24 @@ from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.calculators.emt import EMT
 
 class TestEnergy(unittest.TestCase):
-	def test_energy(self):
-		atoms = FaceCenteredCubic(directions=[[1,0,0],[0,1,0],[0,0,1]], symbol='Cu', size=(3,3,3),pbc=True)
-		MaxwellBoltzmannDistribution(atoms, temperature_K=300)
-		
-		atoms.calc = EMT()
-		
-		if get_energy(atoms) == get_kinetic_energy(atoms) + get_potential_energy(atoms):
-			self.assertTrue(True)
-		else:
-			self.assertTrue(False)
+
+    def test_energy(self):
+  
+        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], symbol='Cu',  size=(3,3,3), pbc=True)
+        MaxwellBoltzmannDistribution(atoms, temperature_K=300)
+
+        atoms.calc = EMT()
+
+        if get_energy(atoms) == get_kinetic_energy(atoms) + get_potential_energy(atoms):
+        
+            self.assertTrue(True)
+        else:
+        
+            self.assertTrue(False)
 
 if __name__ =="__main__":
-	tests = [unittest.TestLoader().loadTestsFromTestCase(TestEnergy)]
-	testsuite = unittest.TestSuite(tests)
-	result = unittest.TextTestRunner(verbosity=0).run(testsuite)
-	sys.exit(not result.wasSuccessful())
+
+    tests = [unittest.TestLoader().loadTestsFromTestCase(TestEnergy)]
+    testsuite = unittest.TestSuite(tests)
+    result = unittest.TextTestRunner(verbosity=0).run(testsuite)
+    sys.exit(not result.wasSuccessful())

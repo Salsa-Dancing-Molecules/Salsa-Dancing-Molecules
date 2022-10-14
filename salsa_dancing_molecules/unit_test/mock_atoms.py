@@ -23,3 +23,11 @@ class atoms:
     def get_temperature(self):
         """Return mock-temperature."""
         return 273
+
+    def get_kinetic_energy(self):
+        """Return mock-kinetic-energy."""
+        return 15
+
+    def get_potential_energy(self):
+        """Return mock-kinetic-energy."""
+        return 20

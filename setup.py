@@ -12,8 +12,8 @@ setup(
           "Programming Language :: Python :: 3 :: Only",
     ],
     packages=find_packages(where="."),
-    python_requires=">=3.6",
-    install_requires=[],
+    python_requires=">=3.7",
+    install_requires=['ase', 'asap3'],
     entry_points={
         "console_scripts": [
             "salsa-dancing-molecules=salsa_dancing_molecules:main",

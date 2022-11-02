@@ -60,3 +60,16 @@ development sessions, it is enough to issue
     source virtualenv/bin/activate
 
 from the project's top directory to enter the development environment.
+
+## Running the tests
+
+To run the project's unit tests, first install pytest in the virtual
+environment
+
+	pip install pytest
+
+then run
+
+	pytest
+
+from the top directory.

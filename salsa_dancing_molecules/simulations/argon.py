@@ -47,7 +47,7 @@ def run(steps, cell_size=5, output_path='ar.traj'):
         print('Energy per atom: Epot = %.3feV  Ekin = %.3feV (T=%3.0fK)  '
               'Etot = %.3feV' % (epot, ekin, ekin / (1.5 * units.kB),
                                  epot + ekin))
-        #temp = sdm.get_temperature(ekin)
+        # temp = sdm.get_temperature(ekin)
         temp = ekin/(1.5*units.kB)
         f.append(str(temp)+"\n")
 

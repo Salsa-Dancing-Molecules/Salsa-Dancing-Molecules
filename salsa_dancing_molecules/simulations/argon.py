@@ -5,6 +5,7 @@ from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
 from ase import units
 from asap3 import Trajectory, LennardJones, EMT
+from datetime import datetime
 
 
 def run(steps, cell_size=5, output_path='ar.traj'):
@@ -36,6 +37,8 @@ def run(steps, cell_size=5, output_path='ar.traj'):
     dyn = VelocityVerlet(atoms, 1 * units.fs)  # 5 fs time step.
     traj = Trajectory(output_path, "w", atoms)
     dyn.attach(traj.write, interval=100)
+    dt_string = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    f = open("temp_log_"+dt_string, "a")
 
     def printenergy(a=atoms):
         """Print the potential, kinetic and total energy."""
@@ -44,8 +47,12 @@ def run(steps, cell_size=5, output_path='ar.traj'):
         print('Energy per atom: Epot = %.3feV  Ekin = %.3feV (T=%3.0fK)  '
               'Etot = %.3feV' % (epot, ekin, ekin / (1.5 * units.kB),
                                  epot + ekin))
+        #temp = sdm.get_temperature(ekin)
+        temp = ekin/(1.5*units.kB)
+        f.append(str(temp)+"\n")
 
     # Now run the dynamics
     dyn.attach(printenergy, interval=10)
     printenergy()
     dyn.run(steps)
+    f.close()

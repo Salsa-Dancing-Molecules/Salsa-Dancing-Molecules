@@ -24,6 +24,10 @@ def run(steps, cell_size=5, output_path='ar.traj'):
                               size=(cell_size, cell_size, cell_size),
                               latticeconstant=5.256,
                               pbc=True)
+    
+    # set upp parallelized atoms object
+    cpulayout = "auto"
+    new_atoms = MakeParallelAtoms(atoms, cpulayout)
 
     # Describe the interatomic interactions with the L-J
     atoms.calc = LennardJones(18, 0.010323, 3.40, rCut=6.625, modified=True)

@@ -16,7 +16,7 @@ class PlotTests(unittest.TestCase):
 
         draw_scatter_plot(x_axis, y_axis, filename)
         path = pl.Path(filename)
-        self.assertEquals(path.is_file(), True)
+        self.assertTrue(path.is_file())
 
 
 if __name__ == "__main__":

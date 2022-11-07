@@ -8,7 +8,7 @@ and bulk modulus (in GPa) as float values.
 from ase.io import read
 from ase.units import kJ
 from ase.eos import EquationOfState
-import math
+
 
 def get_lattice_constant_and_bulk_modulus(traj_file):
     """

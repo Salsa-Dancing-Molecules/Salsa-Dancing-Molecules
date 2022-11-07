@@ -7,7 +7,6 @@ function imported from ase.eos.
 
 import sys
 import unittest
-from matplotlib import test
 from lattice_constant import calculate_lattice_constant_and_bulk_modulus
 from unittest.mock import Mock
 """

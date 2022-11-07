@@ -10,9 +10,6 @@ from ase.units import kJ
 from ase.eos import EquationOfState
 import math
 
-traj_file = 'Ag.traj@0:5'
-
-
 def get_lattice_constant_and_bulk_modulus(traj_file):
     """
     Read traj file, place atoms objects in list and call calculation function.
@@ -54,8 +51,6 @@ def calculate_lattice_constant_and_bulk_modulus(configs):
 
     return a, B
 
-
-print(get_lattice_constant_and_bulk_modulus(traj_file))
 
 # Call of function should look like this:
 # get_lattice_constant_and_bulk_modulus(traj_file="Ag.traj@0:5"))

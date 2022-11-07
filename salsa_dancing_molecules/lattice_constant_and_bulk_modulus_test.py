@@ -28,7 +28,6 @@ class LatticeTests(unittest.TestCase):
     def test_lattice_constant_and_bulk_modulus(self):
         """Runs a test with set values for the atoms objects."""
         result = calculate_lattice_constant_and_bulk_modulus(configs)
-        print(result)
         test_success = (1.5662216452033666, 893.9303749757568)
         self.assertTrue(result == test_success)
 

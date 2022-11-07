@@ -1,8 +1,7 @@
 """Unit test for scatter_plot.py."""
-from scatter_plot import draw_scatter_plot
+from ..scatter_plot import draw_scatter_plot
 import unittest
 import pathlib as pl
-import sys
 
 
 class PlotTests(unittest.TestCase):

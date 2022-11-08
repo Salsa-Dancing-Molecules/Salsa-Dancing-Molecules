@@ -20,6 +20,8 @@ atoms.__len__ = Mock(return_value=1)
 configs = [atoms, atoms, atoms, atoms, atoms]
 
 
+# We don't care about numerical stability in our test.
+@pytest.mark.filterwarnings("ignore: Polyfit may be poorly conditioned")
 def test_lattice_constant_and_bulk_modulus():
     """Function for testing latt. const. and bulk mod. calculation."""
     cell = Mock()

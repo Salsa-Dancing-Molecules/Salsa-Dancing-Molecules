@@ -22,10 +22,14 @@ configs = [atoms, atoms, atoms, atoms, atoms]
 
 def test_lattice_constant_and_bulk_modulus():
     """Function for testing latt. const. and bulk mod. calculation."""
+    cell = Mock()
+    cell.get_bravais_lattice.return_value = 'FCC'
+    configs[0].get_cell.return_value = cell
+
     atoms.get_volume.side_effect = [3, 2, 1, 2, 3]
     atoms.get_potential_energy.side_effect = [3, 2, 1, 2, 3]
 
     """Runs a test with set values for the atoms objects."""
     result = calculate_lattice_constant_and_bulk_modulus(configs)
     test_success = (1.5662216452033666, 893.9303749757568)
-    assert result == test_success
+    assert result == pytest.approx(test_success, 0.0001)

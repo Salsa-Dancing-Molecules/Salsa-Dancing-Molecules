@@ -1,7 +1,5 @@
 """Unittest for capacity_NVT.py and capacity_NVE.py."""
 
-import sys
-import unittest
 from ..calculator import capacity_NVE, capacity_NVT
 from unittest.mock import Mock
 from ase import units

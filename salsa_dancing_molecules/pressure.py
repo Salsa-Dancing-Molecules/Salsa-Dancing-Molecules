@@ -2,7 +2,7 @@
 
 from numpy import sum, multiply
 from ase import units
-from temperature import get_temperature
+from .temperature import get_temperature
 
 
 def get_pressure(atoms):

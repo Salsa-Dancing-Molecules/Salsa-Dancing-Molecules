@@ -13,6 +13,11 @@ def init_mock():
     # Mock atom attribute and funtion
     atoms.__len__ = Mock(return_value=1)
     atoms.get_temperature.return_value = 1
+    atoms.get_kinetic_energy.return_value = 1
+    atoms.get_total_energy.return_value = 1
+    atoms.get_potential_energies.return_value = [1, 1, 1]
+    atoms.get_velocities.return_value = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+    atoms.arrays.get.return_value = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
 
 
 def test_capacity_NVE():
@@ -20,8 +25,7 @@ def test_capacity_NVE():
     init_mock()
 
     # Mock funtions
-    expected = 1*units.kB*1.5/(1-(5-4)/(1.5*1*units.kB**2))
-    print(expected)
+    expected = -1.1518362268490951e-12  # Calculated expected value
     result = capacity_NVE.get_NVE_heat_capacity(atoms)
 
     assert expected == result
@@ -32,8 +36,7 @@ def test_capacity_NVT():
     init_mock()
 
     # Mock funtions
-    expected = (5-4)/(units.kB*1**2)
-    print(expected)
+    expected = 109618.08417520954  # Calculated expected value
     result = capacity_NVT.get_NVT_heat_capacity(atoms)
 
     assert expected == result

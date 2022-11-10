@@ -1,11 +1,15 @@
-"""
-Function for calculating temperature of atoms object.
-The function takes in an atoms object and returns the temperature.
-"""
+"""Module for calculating temperature of atoms object."""
 from ase import units
+from energy import get_kinetic_energy
+
 
 def get_temperature(atoms):
-    return (atoms.get_kinetic_energy()/len(atoms))/(1.5*units.kB)
+    """Calculate average temperature of atoms object.
 
-if __name__ == "__main__":
-    get_temperature(atoms)	
+    Arguments:
+        atoms - ASE atoms object
+
+    Returns:
+        temperature - float
+    """
+    return (atoms.get_kinetic_energy()/len(atoms))/(1.5*units.kB)

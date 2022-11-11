@@ -13,8 +13,8 @@ setup(
     ],
     packages=find_packages(where=".",
                            exclude=['salsa_dancing_molecules.unit_test']),
-    python_requires=">=3.7",
-    install_requires=['ase', 'asap3'],
+    python_requires=">=3.8",
+    install_requires=['ase', 'asap3', 'mp_api', 'mpcontribs-client'],
     entry_points={
         "console_scripts": [
             "salsa-dancing-molecules=salsa_dancing_molecules:main",

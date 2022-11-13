@@ -4,6 +4,7 @@ from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
 from ase import units
 from asap3 import Trajectory, AsapError
+from ..variables import Variables
 from ..materialsproject import MatClient
 
 
@@ -16,7 +17,8 @@ def run_for_materials(formula, api_key, steps, output_path, repeat=0):
                            materials
         steps: int       - the number of 1 fs steps to run the simulation for
         output_path: str - path to which to save the generated trajectory
-                           data. They get saved to $output_path-$formula.traj.
+                           data and csv data. They get saved to
+                           $output_path-$formula.traj and -.csv.
         repeat: int      - number of times to repeat the cell in each
                            dimension. (Default: 0, no repetition)
     """
@@ -27,7 +29,7 @@ def run_for_materials(formula, api_key, steps, output_path, repeat=0):
         print(f'Simulating material {i + 1} of {len(atoms_list)}')
 
         symbols = atoms.symbols
-        output_name = f'{output_path}-{symbols}.traj'
+        output_name = f'{output_path}-{symbols}'
 
         if repeat > 0:
             atoms = atoms.repeat(repeat)
@@ -67,19 +69,27 @@ def run(atoms, steps, output_path, use_asap=True):
 
     # We want to run MD with constant energy using the VelocityVerlet
     # algorithm.
+    output_path_traj = output_path + '.traj'
+    output_path_csv = output_path + '.csv'
     dyn = VelocityVerlet(atoms, 1 * units.fs)  # 5 fs time step.
-    traj = Trajectory(output_path, "w", atoms)
+    traj = Trajectory(output_path_traj, "w", atoms)
     dyn.attach(traj.write, interval=100)
 
-    def printenergy(a=atoms):
-        """Print the potential, kinetic and total energy."""
-        epot = a.get_potential_energy() / len(a)
-        ekin = a.get_kinetic_energy() / len(a)
-        print('Energy per atom: Epot = %.3feV  Ekin = %.3feV (T=%3.0fK)  '
-              'Etot = %.3feV' % (epot, ekin, ekin / (1.5 * units.kB),
-                                 epot + ekin))
+    # Generate different quantatives to save
+    Var = Variables()
+
+    def dynamics(a=atoms):
+        # Saves snapshots of the state of system
+        Var.Snapshot(a)
 
     # Now run the dynamics
-    dyn.attach(printenergy, interval=10)
-    printenergy()
+    dyn.attach(dynamics, interval=10)
+    dynamics()
     dyn.run(steps)
+
+    # Convert the list to an array with given data types
+    Var.list_to_array()
+    # Upload the data to file
+    Var.generate_file(output_path_csv)
+    # Simulation is done.
+    print('Molecular dynamics simulation is completed.')

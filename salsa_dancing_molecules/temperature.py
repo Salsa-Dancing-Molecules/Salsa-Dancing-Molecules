@@ -12,4 +12,4 @@ def get_temperature(atoms):
     Returns:
         temperature - float
     """
-    return (atoms.get_kinetic_energy()/len(atoms))/(1.5*units.kB)
+    return atoms.get_kinetic_energy()/(1.5*units.kB)

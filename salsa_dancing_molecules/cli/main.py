@@ -1,7 +1,7 @@
 """Module containing the main function of the simulation software."""
 import argparse
 import sys
-from ..simulations import argon
+from ..simulations import argon, nve
 
 
 def main():
@@ -26,9 +26,30 @@ def main():
                             'trajectory data. Default is to save to "ar.traj"',
                             nargs='?', default="ar.traj")
 
+    nve_parser = command_parser.add_parser('nve', help='Run an NVE simulation')
+    nve_parser.add_argument('formula',
+                            help=('Chemical formula of the material to fetch '
+                                  'from materialsproject and simulate.  '
+                                  '(Default: Ar)'), default='Ar')
+    nve_parser.add_argument('api_key',
+                            help=('API key for materialsproject.org '
+                                  'needed for fetching material structures to '
+                                  'simulate.'))
+    nve_parser.add_argument('steps',
+                            help=('Steps: Number of steps to run '
+                                  '(1 step = 1 fs)'), type=int)
+    nve_parser.add_argument('output_file',
+                            help=('Output file for trajectory data. '
+                                  'The file will be named '
+                                  '$output_file-$formula.traj '
+                                  'for each material'))
+
     args = parser.parse_args()
 
-    if 'steps' in args:
+    if 'formula' in args:
+        nve.run_for_materials(args.formula, args.api_key, args.steps,
+                              args.output_file)
+    elif 'steps' in args:
         argon.run(args.steps, args.cell_size, args.output_path)
 
 

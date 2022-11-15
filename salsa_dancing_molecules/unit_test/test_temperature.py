@@ -1,6 +1,6 @@
 """Unittest for temperature.py."""
 import pytest
-from temperature import get_temperature
+from ..temperature import get_temperature
 from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 

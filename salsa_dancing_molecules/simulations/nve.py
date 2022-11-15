@@ -7,7 +7,7 @@ from asap3 import Trajectory, AsapError
 from ..materialsproject import MatClient
 
 
-def run_for_materials(formula, api_key, steps, output_path):
+def run_for_materials(formula, api_key, steps, output_path, repeat=0):
     """Run an MD simulation for Materials Project materials.
 
     Arguments:
@@ -17,6 +17,8 @@ def run_for_materials(formula, api_key, steps, output_path):
         steps: int       - the number of 1 fs steps to run the simulation for
         output_path: str - path to which to save the generated trajectory
                            data. They get saved to $output_path-$formula.traj.
+        repeat: int      - number of times to repeat the cell in each
+                           dimension. (Default: 0, no repetition)
     """
     with MatClient(api_key) as client:
         atoms_list = client.get_atoms(formula)
@@ -26,6 +28,9 @@ def run_for_materials(formula, api_key, steps, output_path):
 
         symbols = atoms.symbols
         output_name = f'{output_path}-{symbols}.traj'
+
+        if repeat > 0:
+            atoms = atoms.repeat(repeat)
 
         try:
             print(f'Simulating for {symbols}')

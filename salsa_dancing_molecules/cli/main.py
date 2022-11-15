@@ -31,6 +31,12 @@ def main():
                             help=('Chemical formula of the material to fetch '
                                   'from materialsproject and simulate.  '
                                   '(Default: Ar)'), default='Ar')
+    nve_parser.add_argument('--repeat',
+                            help=('Optional number to repeat the '
+                                  'material cell in all three dimensions. '
+                                  'This is usefull if the downloaded '
+                                  'material cell is too small.'),
+                            type=int, default=0)
     nve_parser.add_argument('api_key',
                             help=('API key for materialsproject.org '
                                   'needed for fetching material structures to '
@@ -48,7 +54,7 @@ def main():
 
     if 'formula' in args:
         nve.run_for_materials(args.formula, args.api_key, args.steps,
-                              args.output_file)
+                              args.output_file, args.repeat)
     elif 'steps' in args:
         argon.run(args.steps, args.cell_size, args.output_path)
 

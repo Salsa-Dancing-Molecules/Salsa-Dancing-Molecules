@@ -17,6 +17,7 @@ In the project top directory, do
     conda create -n salsa_dancing_molecules
     conda activate salsa_dancing_molecules
     conda install pip
+    pip install numpy # needed because of broken asap3 dependencies
     pip install -e .
 
 and answer yes to all questions to create an environment called
@@ -41,6 +42,7 @@ In the project top directory, do
 
     python3 -m venv virtualenv
     source virtualenv/bin/activate
+    pip install numpy # needed because of broken asap3 dependencies
     pip install -e .
 
 to create a virtual environment, activate it and install a development
@@ -58,3 +60,16 @@ development sessions, it is enough to issue
     source virtualenv/bin/activate
 
 from the project's top directory to enter the development environment.
+
+## Running the tests
+
+To run the project's unit tests, first install pytest in the virtual
+environment
+
+	pip install pytest
+
+then run
+
+	pytest
+
+from the top directory.

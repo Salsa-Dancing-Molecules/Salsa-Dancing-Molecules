@@ -7,8 +7,10 @@ def test_scatter_plot():
     """Creates simple scatter plot and checks if it is saved in a file."""
     x_axis = [1, 2, 3, 4]
     y_axis = [1, 4, 9, 16]
+    xlabel = 'hoppsan'
+    ylabel = 'hejsan'
     filename = 'test_plot.png'
 
-    draw_scatter_plot(x_axis, y_axis, filename)
+    draw_scatter_plot(x_axis, y_axis, xlabel, ylabel, filename)
     path = pl.Path(filename)
     assert path.is_file()

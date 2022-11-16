@@ -5,7 +5,7 @@ import numpy as np
 from asap3 import Trajectory
 
 
-def get_eqiulibrium(traj, ensemble='NVE'):
+def get_equilibrium(traj, ensemble='NVE'):
     """
     Find the eqiulibrium of a system.
 

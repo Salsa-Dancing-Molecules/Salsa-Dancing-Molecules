@@ -1,6 +1,7 @@
 """Helpers to run an example simulation on Argon."""
 
-from ase.lattice.cubic import FaceCenteredCubic
+from ase.calculators.emt import EMT
+from ase import Atoms
 from .nve import run as nve_run
 
 
@@ -16,9 +17,11 @@ def run(steps, cell_size=5, output_path='ar.traj'):
                       data. Default is to save to "ar.traj".
     """
     # Set up an example Argon crystal
-    atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                              symbol="Ar",
-                              size=(cell_size, cell_size, cell_size),
-                              latticeconstant=5.256,
-                              pbc=True)
+    a = 5.0  # approximate lattice constant
+    b = a / 2
+    atoms = Atoms('Ar',
+                  cell=[(0, b, b), (b, 0, b), (b, b, 0)],
+                  pbc=1,
+                  calculator=EMT())  # use EMT potential
+    atoms = atoms * (cell_size, cell_size, cell_size)
     nve_run(atoms, steps, output_path)

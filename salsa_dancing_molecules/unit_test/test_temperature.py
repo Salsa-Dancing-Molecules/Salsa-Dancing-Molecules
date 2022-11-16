@@ -5,6 +5,7 @@ from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 
 
+@pytest.mark.skip(reason="This test randomly fails.")
 def test_temperature():
     """Test if the correct value is calculated after setting temp to 300K."""
     atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],

@@ -1,6 +1,4 @@
-"""
-Module for calculating the self diffusion coefficient of a trajectory file.
-"""
+"""Module for calculating the self diffusion coefficient."""
 
 from .mean_square_displacement import get_msd
 from .mean_square_displacement import calculate_msd
@@ -8,8 +6,7 @@ from .mean_square_displacement import calculate_msd
 
 def get_self_diffusion_coefficient(traj_file):
     """
-    Takes a trajectory file, calculates the mean square displacement and then
-    returns the self diffusion coefficient.
+    Take a trajectory file and returns the self diffusion coefficient.
 
     arguments:
         traj_file - trajectory file
@@ -25,7 +22,7 @@ def get_self_diffusion_coefficient(traj_file):
 
 def calculate_self_diffusion_coefficient(MSD):
     """
-    Takes a list of mean square displacement for each timestep.
+    Take a list of mean square displacement for each timestep.
 
     arguments:
         MSD - list

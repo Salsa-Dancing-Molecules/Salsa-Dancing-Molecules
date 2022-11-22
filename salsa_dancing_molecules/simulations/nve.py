@@ -77,10 +77,12 @@ def run(atoms, steps, output_path, use_asap=True):
 
     # Generate different quantatives to save
     Var = Variables()
+    Var.set_timestep(10)
 
     def dynamics(a=atoms):
         # Saves snapshots of the state of system
         Var.Snapshot(a)
+        Var.increment_time()
 
     # Now run the dynamics
     dyn.attach(dynamics, interval=10)

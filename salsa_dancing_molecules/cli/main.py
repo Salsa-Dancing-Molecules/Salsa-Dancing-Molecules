@@ -22,9 +22,10 @@ def main():
                             nargs='?', default=5, type=int)
 
     run_parser.add_argument('output_path',
-                            help='path to which to save the generated' +
-                            'trajectory data. Default is to save to "ar.traj"',
-                            nargs='?', default="ar.traj")
+                            help='Output_path: filename which saves ' +
+                            'trajectory data and simulation data. Default ' +
+                            'is "X"',
+                            nargs='?', default="X")
 
     nve_parser = command_parser.add_parser('nve', help='Run an NVE simulation')
     nve_parser.add_argument('formula',
@@ -45,9 +46,9 @@ def main():
                             help=('Steps: Number of steps to run '
                                   '(1 step = 1 fs)'), type=int)
     nve_parser.add_argument('output_file',
-                            help=('Output file for trajectory data. '
-                                  'The file will be named '
-                                  '$output_file-$formula.traj '
+                            help=('Output file for trajectory data and '
+                                  'simulation data. The file will be named '
+                                  '$output_file-$formula.traj and -.csv '
                                   'for each material'))
 
     args = parser.parse_args()

@@ -15,17 +15,10 @@ def get_msd(traj_file, reference="final"):
     return:
         mean square displacement - list
 
-    Example of a function call:
-        get_msd(traj_file = "cu.traj@0:-1")
-    or
-        get_msd(traj_file = "cu.traj@0:-1", reference = "initial")
-
-    "@0:-1" after the trajectory file name means that all the atoms objects
-    will be read.
     If " reference = "initial" " is included the first atom positions will be
     used as reference. Otherwise refernce is set to the last atom positions.
     """
-    configs = read(traj_file)
+    configs = read(traj_file + "@0:-1")
 
     return calculate_msd(configs, reference)
 

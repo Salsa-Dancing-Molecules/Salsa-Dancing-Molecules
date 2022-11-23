@@ -1,0 +1,9 @@
+{
+    "ensemble": "nve",
+    "potential": "lennard_jones",
+    "steps": 100,
+    "cell_size": 5,
+    "output_path": "example_simulation/output/Ar_working.traj",
+    "use_asap": false,
+    "material": "example_simulation/materials/Ar.pickle"
+}

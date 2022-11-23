@@ -77,8 +77,8 @@ def main():
                                    ' Ekin, Epot, Temp, Pres, cnve '
                                    ), nargs='?', default='-')
 
-    worker_parser = command_parser.add_parser('worker', 
-                                              help='Handle arguments for workers.')
+    worker_parser = command_parser.add_parser('worker',
+                                              help='Arguments for workers.')
     worker_parser.add_argument('work_path', help='Path to working directory.')
 
     args = parser.parse_args()
@@ -94,6 +94,7 @@ def main():
 
     elif 'work_path' in args:
         worker_process.start(args.work_path)
+
 
 if __name__ == '__main__':
     main()

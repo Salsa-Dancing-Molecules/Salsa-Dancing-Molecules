@@ -6,6 +6,7 @@ from ase import units
 from asap3 import Trajectory, AsapError
 from ..variables import Variables
 from ..materialsproject import MatClient
+from ..lennardjonesparse import parse_lj_params
 
 
 def run_for_materials(formula, api_key, steps, output_path, repeat=0):
@@ -55,14 +56,21 @@ def run(atoms, steps, output_path, use_asap=True):
         use_asap: bool   - Whether to use ASAP3 to calculate the potential.
     """
     # Describe the interatomic interactions with the L-J
-    # FIXME: This Lennard-Jones potential is currently hard coded for Argon.
+    # FIXME: This Lennard-Jones potential is currently coded for
+    # only pure elements
+    element_symbols = atoms.get_chemical_symbols()
+    if len(element_symbols) > 1:
+        print('More than one element was inputted, will use LJ-parameters for '
+              f'{element_symbols[0]}')
+    element, rc, epsilon, sigma = parse_lj_params(element_symbols[0])
+
     if use_asap:
         from asap3 import LennardJones
-        atoms.calc = LennardJones(18, 0.010323, 3.40, rCut=6.625,
+        atoms.calc = LennardJones(element, epsilon, sigma, rCut=rc,
                                   modified=True)
     else:
         from ase.calculators.lj import LennardJones
-        atoms.calc = LennardJones(epsilon=0.010323, sigma=3.40, rc=6.625)
+        atoms.calc = LennardJones(epsilon=epsilon, sigma=sigma, rc=rc)
 
     # Set the momenta corresponding to T=300K
     MaxwellBoltzmannDistribution(atoms, temperature_K=40)

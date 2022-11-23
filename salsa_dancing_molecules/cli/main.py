@@ -2,6 +2,7 @@
 import argparse
 import sys
 from ..simulations import argon, nve
+from ..command_plot import data_plot
 
 
 def main():
@@ -50,12 +51,38 @@ def main():
                                   'simulation data. The file will be named '
                                   '$output_file-$formula.traj and -.csv '
                                   'for each material'))
+    plot_parser = command_parser.add_parser(
+        'plot', help='Plot the simulation data with four plots or '
+        'specify a variable to get a single plot.')
+
+    plot_parser.add_argument('--show',
+                             help=('Open up a window to show plot/plots,'
+                                   ' default: do not show'),
+                             default=False, action='store_true')
+
+    plot_parser.add_argument('filename',
+                             help=('The name of the file containing datafile,'
+                                   ' default: X.csv'), nargs='?',
+                             default='X.csv')
+
+    plot_parser.add_argument('image_file',
+                             help=('The name of the file of the saved plot,'
+                                   ' default: Image.png'), nargs='?',
+                             default='Image.png')
+
+    plot_parser.add_argument('variable',
+                             help=('Possible single plots of variables:'
+                                   ' Ekin, Epot, Temp, Pres, cnve '
+                                   ), nargs='?', default='-')
 
     args = parser.parse_args()
 
     if 'formula' in args:
         nve.run_for_materials(args.formula, args.api_key, args.steps,
                               args.output_file, args.repeat)
+    elif 'filename' in args:
+        data_plot(args.variable, args.filename, args.image_file, args.show)
+
     elif 'steps' in args:
         argon.run(args.steps, args.cell_size, args.output_path)
 

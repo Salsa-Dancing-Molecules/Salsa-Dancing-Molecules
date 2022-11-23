@@ -17,6 +17,10 @@ class Variables:
     temperatures = []
     specific_heat_NVE = []
 
+    time = []
+    timestep = 0
+    time_counter = 0
+
     def Snapshot(self, a):
         """Take a snapshot of the state during the dynamics."""
         self.potential_energies.append(get_potential_energy(a))
@@ -33,6 +37,7 @@ class Variables:
         self.atomic_pressures = np.array(self.atomic_pressures, dtype=float)
         self.temperatures = np.array(self.temperatures, dtype=float)
         self.specific_heat_NVE = np.array(self.specific_heat_NVE, dtype=float)
+        self.time = np.array(self.time, dtype=float)
 
     def generate_file(self, file_name='simulation_data.csv'):
         """Save the physical quantatives into a CSV file."""
@@ -40,8 +45,18 @@ class Variables:
             output_path=file_name,
             data_head=['Potential Energy (eV)', 'Kinetic Energy (eV)',
                        'Pressure (Pa)', 'Temperature (K)',
-                       'Specific Heat Capacity NVE (J/[K kg])'],
+                       'Specific Heat Capacity NVE (J/[K kg])',
+                       'Time (fs)'],
             data_list=[self.potential_energies, self.kinetic_energies,
                        self.atomic_pressures, self.temperatures,
-                       self.specific_heat_NVE]
+                       self.specific_heat_NVE, self.time]
         )
+
+    def set_timestep(self, step):
+        """Set the timestep."""
+        self.timestep = step
+
+    def increment_time(self):
+        """Time increment."""
+        self.time.append(self.time_counter)
+        self.time_counter = self.time_counter+self.timestep

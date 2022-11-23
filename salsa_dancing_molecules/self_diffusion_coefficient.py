@@ -29,6 +29,12 @@ def calculate_self_diffusion_coefficient(MSD):
 
     returns:
         self_diffusion_coefficient - float
+
+    self_diffusion_coefficient is calculated by taking the last value of the
+    mean square displacement. Since MSD is calculated with the initial value as
+    reference the last value will give us the slope of MSD. This presupposes
+    that the material being simulated is a liquid, which will give a linear
+    slope.
     """
     t = len(MSD)
     self_diffusion_coefficient = MSD[-1]/(6*t)

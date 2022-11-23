@@ -1,4 +1,5 @@
 """Helpers for fetching data from materialsproject.org."""
+import pickle
 from mp_api.client import MPRester
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -26,7 +27,7 @@ class MatClient(MPRester):
         """Initialise the MatClient class with an API key.
 
         arguments:
-            api_key - key for the materialsproject.org API
+            api_key: str - key for the materialsproject.org API
         """
         super().__init__(api_key)
 
@@ -34,7 +35,7 @@ class MatClient(MPRester):
         """Get ASE atom objects containing specfici elements.
 
         arguments:
-            formula - chemical formula to search for, ex. 'Li-Fe-O'
+            formula: str - chemical formula to search for, ex. 'Li-Fe-O'
 
         returns:
             list of ASE atom objects
@@ -44,3 +45,23 @@ class MatClient(MPRester):
             AseAtomsAdaptor.get_atoms(struct) for struct in structs
         ]
         return atoms
+
+    def pickle_atoms(self, formula, output_dir):
+        """Download and pickle a material.
+
+        Download all configurations fro a material with a given
+        formula and save a pickled ASE atoms in output_dir.
+
+        Atoms are saved to files named their chemical formula with
+        the file extension .pickle.
+
+        arguments:
+            formula:    str - chemical formula to search for, ex. 'Li-Fe-O'
+            output_dir: str - path to a directory in which to save the
+                              atom objects
+        """
+        atoms = self.get_atoms(formula)
+        for atom in atoms:
+            path = f"{output_dir}/{atom.get_chemical_formula()}.pickle"
+            with open(path, 'wb') as file:
+                pickle.dump(atom, file)

@@ -1,24 +1,28 @@
-"""Module for finding the "steady state" of a system"""
+"""Module for finding the "steady state" of a system."""
 
 from pymbar.timeseries import detect_equilibration
 import numpy as np
+from asap3 import Trajectory
 
 
-
-def get_eqiulibrium(temperatures):
+def get_eqiulibrium(traj, ensemble='NVE'):
     """
-    Function for finding the eqiulibrium of a NVE-system.
+    Find the eqiulibrium of a system.
 
-    arguments:
-        temperatures - array, containing temperatures for each timestep 
+    Input:
+        traj: str  - trajectory file
 
-    returns:
-        eqiulibrium - integer
+    Output:
+        eqiulibrium: int   - timestep when equilibrium starts.
     """
-    [eqiulibrium, g, Neff_max] = detect_equilibration(temperatures)
-    
-    return eqiulibrium
+    configs = Trajectory(traj)
+    if ensemble == 'NVE':
+        list = [atoms.get_temperature() for atoms in configs]
+    elif ensemble == 'NVT':
+        list = [atoms.get_potential_energy() for atoms in configs]
+    else:
+        list = [atoms.get_temperature() for atoms in configs]
+    list = np.array(list, dtype=np.float64)
+    [equilibrium, _, _] = detect_equilibration(list)
 
-if __name__ == "__main__":
-    temperatures=np.array([])
-    print(get_eqiulibrium(temperatures))
+    return equilibrium

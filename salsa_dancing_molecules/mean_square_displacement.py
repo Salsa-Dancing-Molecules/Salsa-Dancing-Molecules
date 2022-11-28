@@ -1,16 +1,19 @@
 """Module for calculating the mean square displacement of a trajectory file."""
 
-from ase.io import read
+from ase.io.trajectory import Trajectory
 import numpy as np
+from .average import average
 
 
-def get_msd(traj_file, reference="final"):
+def get_msd(traj_file, t0, reference="final"):
     """
     Read trajectory file and call calculation function.
 
     arguments:
-        traj_file - trajectory file
-        reference - string or None
+        traj_file: str         - trajectory file
+        t0: int                - timestep when equilibrium starts
+        reference: str or None - which atom to be used as reference,can be
+                                 'initial' or 'final', default is 'final'.
 
     return:
         mean square displacement - list
@@ -18,21 +21,23 @@ def get_msd(traj_file, reference="final"):
     If " reference = "initial" " is included the first atom positions will be
     used as reference. Otherwise refernce is set to the last atom positions.
     """
-    configs = read(traj_file + "@0:-1")
+    configs = Trajectory(traj_file)
 
-    return calculate_msd(configs, reference)
+    return calculate_msd(configs, t0, reference)
 
 
-def calculate_msd(configs, reference="final"):
+def calculate_msd(configs, t0, reference="final"):
     """
     Calculate the mean square dispalcement for a trajectory file as a list.
 
     arguments:
-        configs - list
-        reference - string or None
+        configs: ase.io.trajectory.Trajectory - traj file containg atom-obj.
+        reference: str or None - which atom to be used as reference,can be
+                                 'initial' or 'final', default is 'final'.
 
     return:
-        mean square displacement - list
+        MSD: list     - means square displacement
+        MSD_avr: list - time evolution average of mean square displacement
     """
     N = len(configs[0])  # Number of atoms
     atom = configs[0]
@@ -81,4 +86,5 @@ def calculate_msd(configs, reference="final"):
     for pos in atom_positions:
         X = np.subtract(pos, reference_position)
         MSD.append(1/N*sum([(np.linalg.norm(i))**2 for i in X]))
-    return MSD
+    MSD_avr = average(t0, MSD)
+    return MSD, MSD_avr

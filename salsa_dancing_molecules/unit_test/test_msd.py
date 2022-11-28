@@ -16,6 +16,13 @@ configs = [atoms, atoms2]
 
 def test_mean_square_displacement():
     """Function for testing the mean square displacement calculation."""
-    result = calculate_msd(configs)
+    MSD, _ = calculate_msd(configs, 0)
     test_success = (7.5, 0)
-    assert result == pytest.approx(test_success, 0.0001)
+    assert MSD == pytest.approx(test_success, 0.0001)
+
+
+def test_mean_square_displacement_time_average():
+    """Function for testing the mean square displacement calculation."""
+    _, MSD_avr = calculate_msd(configs, 0)
+    test_success = (7.5, 7.5 / 2)
+    assert MSD_avr == pytest.approx(test_success, 0.0001)

@@ -3,7 +3,11 @@ import os
 
 
 def do_preparations(work_path):
-    """Check if folders exists, create if not found."""
+    """Check if folders exists, create if not found.
+
+    Args:
+        work_path - string with path to workplace directory.
+    """
     if not os.path.exists(work_path):
         os.mkdir(work_path)
     list_of_folders = ["/unbegun_simulations",

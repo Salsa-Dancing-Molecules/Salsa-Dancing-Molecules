@@ -1,18 +1,32 @@
 """Module containing configuration functions."""
 import configparser
-import json
 
 
-def read_configuration(filename, section='Gold'):
+def string_to_list(s):
+    """Convert a string into a list.
+
+    Args:
+        s - string describing a list
+    Returns:
+        list if s described a list, otherwise returns s
+    """
+    if s.startswith('[') and s.endswith(']'):
+        return s.strip('][').split(',')
+    return s
+
+
+def read_configuration(filename):
+    """Open file and create config.
+
+    Args:
+        filename - path to file with config.
+    Returns:
+        config - dictionary with strings and lists.
+    """
     con = configparser.ConfigParser()
     con.read(filename)
-    materials_dict = {}
-    for key in con.options(section):
-        materials_dict[key] = con.get(section, key)
-    return materials_dict
-
-
-def generate_JSON(dictionary, output_directory):
-    json_object = json.dumps(dictionary)
-    with open(output_directory + dictionary['symbols']+'.json', 'w') as fp:
-        json.dump(json_object, fp)
+    config = con._sections
+    for section in config.keys():
+        for key in config[section].keys():
+            config[section][key] = string_to_list(config[section][key])
+    return config

@@ -17,5 +17,5 @@ def get_pressure(atoms):
     # sum of position vector and forces vector:
     dot_product = sum(multiply(atoms.get_positions(), atoms.get_forces()))
 
-    return ((len(atoms)*units.kB*get_temperature(atoms))/atoms.get_volume() +
-            (1/(3*atoms.get_volume()))*dot_product)
+    return ((len(atoms)*units.kB*get_temperature(atoms)/atoms.get_volume() +
+            (1/(3*atoms.get_volume()))*dot_product))

@@ -11,6 +11,7 @@ def test_scatter_plot():
     ylabel = 'hejsan'
     filename = 'test_plot.png'
 
-    draw_scatter_plot(x_axis, y_axis, xlabel, ylabel, filename)
+    draw_scatter_plot(x_axis, y_axis, xlabel, ylabel, filename,
+                      show=False)
     path = pl.Path(filename)
     assert path.is_file()

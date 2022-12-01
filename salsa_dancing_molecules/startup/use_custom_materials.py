@@ -1,4 +1,8 @@
-"""Module for handling custom materials."""
+"""Module for handling custom materials.
+
+Example material can be found in:
+example_simulation/materials/example_material.py
+"""
 from pickle import dump
 import os
 import importlib

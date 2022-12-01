@@ -22,6 +22,11 @@ def read_configuration(filename):
         filename - path to file with config.
     Returns:
         config - dictionary with strings and lists.
+
+    Example config can be found in example_simulation/simulation_config.conf.
+    The resulting dictionary has values that also are dictionaries.
+    Those dictionaries have values that are only strings, before some of those
+    strings are converted to lists with strings.
     """
     con = configparser.ConfigParser()
     con.read(filename)

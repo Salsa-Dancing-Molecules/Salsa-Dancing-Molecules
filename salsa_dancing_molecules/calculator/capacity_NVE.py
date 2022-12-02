@@ -14,9 +14,12 @@ from .ensemble_energies import (get_kine_sqr_ensemble,
 
 def get_NVE_heat_capacity(a):
     """Calculat Heat Capacity for a NVE ensamble."""
+    u_to_kg = sum(a.get_masses())*1.6605*10**(-27)
+    eV_to_J = 1.602*10**(-19)
+    unit_converstion = eV_to_J/u_to_kg
     T2 = a.get_temperature()**2
     k_sqr_ensemble = get_kine_sqr_ensemble(a)
     k_ensemble_sqr = get_kine_ensemble_sqr(a)
-    return (len(a)*units.kB*1.5/(1 - (k_sqr_ensemble
-                                      - k_ensemble_sqr)
-                                 / (1.5*T2*units.kB**2)))
+    return (unit_converstion*len(a)*units.kB*1.5/(1 - (k_sqr_ensemble
+                                                  - k_ensemble_sqr)
+                                                  / (1.5*T2*units.kB**2)))

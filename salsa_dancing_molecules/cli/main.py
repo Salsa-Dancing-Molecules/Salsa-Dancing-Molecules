@@ -3,6 +3,7 @@ import argparse
 import sys
 from ..simulations import argon, nve
 from ..command_plot import data_plot
+from ..startup import startup_script
 
 
 def main():
@@ -75,6 +76,13 @@ def main():
                                    ' Ekin, Epot, Temp, Pres, cnve '
                                    ), nargs='?', default='-')
 
+    startup_parser = command_parser.add_parser(
+        'startup', help='Script for generating the necessary files to '
+        'run the program')
+
+    startup_parser.add_argument('config_path',
+                                help=('Path to simulation config'))
+
     args = parser.parse_args()
 
     if 'formula' in args:
@@ -85,6 +93,9 @@ def main():
 
     elif 'steps' in args:
         argon.run(args.steps, args.cell_size, args.output_path)
+
+    elif 'config_path' in args:
+        startup_script.start(args.config_path)
 
 
 if __name__ == '__main__':

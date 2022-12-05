@@ -1,6 +1,8 @@
 """Module containing the main function of the simulation software."""
 import argparse
 import sys
+
+from ..worker_process import worker_process
 from ..simulations import argon, nve
 from ..command_plot import data_plot
 from ..startup import startup_script
@@ -76,6 +78,10 @@ def main():
                                    ' Ekin, Epot, Temp, Pres, cnve '
                                    ), nargs='?', default='-')
 
+    worker_parser = command_parser.add_parser('worker',
+                                              help='Arguments for workers.')
+    worker_parser.add_argument('work_path', help='Path to working directory.')
+
     startup_parser = command_parser.add_parser(
         'startup', help='Script for generating the necessary files to '
         'run the program')
@@ -93,6 +99,9 @@ def main():
 
     elif 'steps' in args:
         argon.run(args.steps, args.cell_size, args.output_path)
+
+    elif 'work_path' in args:
+        worker_process.start(args.work_path)
 
     elif 'config_path' in args:
         startup_script.start(args.config_path)

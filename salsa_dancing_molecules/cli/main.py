@@ -54,6 +54,13 @@ def main():
                                   'simulation data. The file will be named '
                                   '$output_file-$formula.traj and -.csv '
                                   'for each material'))
+
+    nve_parser.add_argument('--potential',
+                            help=('Potential from taken from OpenKIM '
+                                  'database. If no potential is given a '
+                                  'standard Lennard-Jones potential '
+                                  'will be used'), default='Lennard-Jones')
+
     plot_parser = command_parser.add_parser(
         'plot', help='Plot the simulation data with four plots or '
         'specify a variable to get a single plot.')
@@ -93,7 +100,7 @@ def main():
 
     if 'formula' in args:
         nve.run_for_materials(args.formula, args.api_key, args.steps,
-                              args.output_file, args.repeat)
+                              args.output_file, args.potential, args.repeat)
     elif 'filename' in args:
         data_plot(args.variable, args.filename, args.image_file, args.show)
 

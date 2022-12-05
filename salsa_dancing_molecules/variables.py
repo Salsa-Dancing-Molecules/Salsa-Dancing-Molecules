@@ -4,7 +4,6 @@ from .pressure import get_pressure
 from .energy import get_energy, get_kinetic_energy, get_potential_energy
 from .temperature import get_temperature
 from .filerwriter import file_saver
-from .calculator.capacity_NVE import get_NVE_heat_capacity
 import numpy as np
 
 
@@ -15,7 +14,6 @@ class Variables:
     kinetic_energies = []
     atomic_pressures = []
     temperatures = []
-    specific_heat_NVE = []
 
     time = []
     timestep = 0
@@ -27,7 +25,6 @@ class Variables:
         self.kinetic_energies.append(get_kinetic_energy(a))
         self.atomic_pressures.append(get_pressure(a))
         self.temperatures.append(get_temperature(a))
-        self.specific_heat_NVE.append(get_NVE_heat_capacity(a))
 
     def list_to_array(self):
         """Convert the global lists into arrays."""
@@ -36,7 +33,6 @@ class Variables:
         self.kinetic_energies = np.array(self.kinetic_energies, dtype=float)
         self.atomic_pressures = np.array(self.atomic_pressures, dtype=float)
         self.temperatures = np.array(self.temperatures, dtype=float)
-        self.specific_heat_NVE = np.array(self.specific_heat_NVE, dtype=float)
         self.time = np.array(self.time, dtype=float)
 
     def generate_file(self, file_name='simulation_data.csv'):
@@ -44,12 +40,9 @@ class Variables:
         file_saver(
             output_path=file_name,
             data_head=['Potential Energy (eV)', 'Kinetic Energy (eV)',
-                       'Pressure (Pa)', 'Temperature (K)',
-                       'Specific Heat Capacity NVE (J/[K kg])',
-                       'Time (fs)'],
+                       'Pressure (Pa)', 'Temperature (K)', 'Time (fs)'],
             data_list=[self.potential_energies, self.kinetic_energies,
-                       self.atomic_pressures, self.temperatures,
-                       self.specific_heat_NVE, self.time]
+                       self.atomic_pressures, self.temperatures, self.time]
         )
 
     def set_timestep(self, step):

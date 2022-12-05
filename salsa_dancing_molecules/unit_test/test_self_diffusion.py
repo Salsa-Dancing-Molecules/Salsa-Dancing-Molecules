@@ -9,6 +9,6 @@ MSD = [0, 7.5]
 
 def test_self_diffusion_coefficient():
     """Function for testing the self diffusion coefficient."""
-    result = calculate_self_diffusion_coefficient(MSD)
+    result = calculate_self_diffusion_coefficient(MSD, 0)
     test_success = 0.625
     assert result == pytest.approx(test_success, 0.0001)

@@ -17,7 +17,7 @@ jobs:
       - name: Install pytest and dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest numpy ase matplotlib mp_api
+          pip install pytest numpy ase matplotlib mp_api pymbar
           pip install asap3
       - name: Running tests
         run: |

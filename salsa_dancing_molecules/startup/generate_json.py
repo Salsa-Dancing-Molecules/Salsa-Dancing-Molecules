@@ -70,6 +70,14 @@ def convert_to_json(config):
                                  "/materials/" +
                                  json_dict["material"] +
                                  ".pickle")
+        json_dict["traj_output_path"] = (json_dict["workspace_path"] +
+                                         "/output/traj/" +
+                                         name_string +
+                                         ".traj")
+        json_dict["csv_output_path"] = (json_dict["workspace_path"] +
+                                        "/output/csv/" +
+                                        name_string +
+                                        ".csv")
         with open(json_dict["workspace_path"] +
                   "/unbegun_simulations/" +
                   name_string+".json", "w") as outfile:

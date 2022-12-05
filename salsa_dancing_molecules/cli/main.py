@@ -5,6 +5,7 @@ import sys
 from ..worker_process import worker_process
 from ..simulations import argon, nve
 from ..command_plot import data_plot
+from ..startup import startup_script
 
 
 def main():
@@ -81,6 +82,13 @@ def main():
                                               help='Arguments for workers.')
     worker_parser.add_argument('work_path', help='Path to working directory.')
 
+    startup_parser = command_parser.add_parser(
+        'startup', help='Script for generating the necessary files to '
+        'run the program')
+
+    startup_parser.add_argument('config_path',
+                                help=('Path to simulation config'))
+
     args = parser.parse_args()
 
     if 'formula' in args:
@@ -94,6 +102,9 @@ def main():
 
     elif 'work_path' in args:
         worker_process.start(args.work_path)
+
+    elif 'config_path' in args:
+        startup_script.start(args.config_path)
 
 
 if __name__ == '__main__':

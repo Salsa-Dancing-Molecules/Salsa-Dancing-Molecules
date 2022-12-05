@@ -13,8 +13,9 @@ def do_preparations(work_path):
     list_of_folders = ["/unbegun_simulations",
                        "/started_simulations",
                        "/done_simulations",
-                       "/output",
+                       "/output/traj",
+                       "/output/csv",
                        "/materials"]
     for folder in list_of_folders:
         if not os.path.exists(work_path+folder):
-            os.mkdir(work_path+folder)
+            os.makedirs(work_path+folder)

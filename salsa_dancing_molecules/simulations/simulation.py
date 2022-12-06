@@ -8,7 +8,7 @@ from asap3 import Trajectory
 from ..variables import Variables
 
 
-def choose_potential(potential, kim_model, use_asap, atoms):
+def choose_potential(potential, sim_info, use_asap, atoms):
     """Set the atoms object's calc attribute.
 
     The atoms object's .calc value specifies the calculator used
@@ -26,9 +26,9 @@ def choose_potential(potential, kim_model, use_asap, atoms):
     if potential == "openkim":  # use openkim
         try:
             from ase.calculators.kim import KIM
-            atoms.calc = KIM(kim_model)
+            atoms.calc = KIM(sim_info['kim_model'])
         except RuntimeError:
-            print(f'{kim_model} is not a valid OpenKIM potential, '
+            print(f'{sim_info["kim_model"]} is not a valid OpenKIM potential, '
                   'will use standard Lennard-Jones potential')
             potential = 'lennard-jones'
         else:
@@ -88,7 +88,7 @@ def run(sim_info, atoms):
     if type(sim_info["use-asap"]) is str:
         sim_info["use-asap"] = (sim_info["use-asap"].lower() == "true")
     choose_potential(sim_info["potential"],
-                     sim_info["kim-model"],
+                     sim_info,
                      sim_info["use-asap"],
                      atoms)
     # Initialize the momenta from the chosen initial temperature.

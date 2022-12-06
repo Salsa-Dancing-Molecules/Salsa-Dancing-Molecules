@@ -44,7 +44,7 @@ def start(args):
             if custom_materials.endswith('.py'):
                 materials_to_pickles(custom_materials, work_path,
                                      material_names)
-            elif '.' not in custom_materials:  # check if path is directory
+            elif os.path.isdir(custom_materials):  # check if path is directory
                 for file in os.listdir(custom_materials):
                     if file.endswith('.py'):
                         materials_to_pickles(custom_materials +

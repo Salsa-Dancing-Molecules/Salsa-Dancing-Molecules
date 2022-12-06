@@ -26,6 +26,10 @@ def start(args):
         work_path = simulation_conf["workspace_path"]
         material_names = simulation_conf["material"]
 
+        if work_path[0] != '/':
+            print('Error: workspace_path must be an absolute path!')
+            sys.exit(1)
+
         do_preparations(work_path)
 
         # If we only have Materialproject materials, materials_path
@@ -33,6 +37,10 @@ def start(args):
         # materials if the path exists.
         if "materials_path" in simulation_conf:
             custom_materials = simulation_conf["materials_path"]
+            if custom_materials[0] != '/':
+                print('Error: materials_path must be an absolute path!')
+                sys.exit(1)
+
             if custom_materials.endswith('.py'):
                 materials_to_pickles(custom_materials, work_path,
                                      material_names)

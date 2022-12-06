@@ -15,10 +15,11 @@ editable mode.
 In the project top directory, do
 
     conda create -n salsa_dancing_molecules
-    conda activate salsa_dancing_molecules
+    source activate salsa_dancing_molecules
     conda install pip
     pip install numpy # needed because of broken asap3 dependencies
     pip install -e .
+    conda install -c conda-forge openkim_models kim-api kimpy
 
 and answer yes to all questions to create an environment called
 salsa_dancing_molecules, activate it and install Salsa Dancing
@@ -32,7 +33,7 @@ which will run the current source code straight from the project.
 The installation step only needs to be done once and during future
 development sessions, it is enough to issue
 
-    conda activate salsa_dancing_molecules
+    source activate salsa_dancing_molecules
 
 to enter the development environment.
 
@@ -60,6 +61,41 @@ development sessions, it is enough to issue
     source virtualenv/bin/activate
 
 from the project's top directory to enter the development environment.
+
+## Running on Sigma Supercomputer
+
+In the project top directory, do
+
+    conda create -n salsa_dancing_molecules
+    source activate salsa_dancing_molecules
+    module load buildenv-intel/2018a-eb # needed to get right packages on Sigma
+    conda install pip
+    pip install numpy # needed because of broken asap3 dependencies
+    pip install -e .
+    conda install -c conda-forge asap3
+    conda install -c conda-forge openkim_models kim-api kimpy
+
+and answer yes to all questions to create an environment called
+salsa_dancing_molecules, activate it and install Salsa Dancing
+Molecules in development mode into it. If successful, the program can
+be run with
+
+    salsa-dancing-molecules
+
+which will run the current source code straight from the project.
+
+The installation step only needs to be done once and during future
+development sessions, it is enough to issue
+
+    source activate salsa_dancing_molecules
+
+to enter the development environment.
+
+To run a generated sbatch script, do
+
+    sbatch *filename*
+
+to run the job on Sigma.
 
 ## Running the tests
 

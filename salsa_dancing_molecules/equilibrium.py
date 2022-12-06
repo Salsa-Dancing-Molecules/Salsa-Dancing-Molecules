@@ -5,17 +5,16 @@ import numpy as np
 from asap3 import Trajectory
 
 
-def get_equilibrium(traj, ensemble='NVE'):
+def get_eqiulibrium(configs, ensemble='NVE'):
     """
     Find the eqiulibrium of a system.
 
     Input:
-        traj: str  - trajectory file
+        configs: ase.io.trajectory.Trajectory - traj file containg atom-obj.
 
     Output:
         eqiulibrium: int   - timestep when equilibrium starts.
     """
-    configs = Trajectory(traj)
     if ensemble == 'NVE':
         list = [atoms.get_temperature() for atoms in configs]
     elif ensemble == 'NVT':

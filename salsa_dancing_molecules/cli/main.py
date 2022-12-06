@@ -6,6 +6,7 @@ from ..worker_process import worker_process
 from ..simulations import argon, nve
 from ..command_plot import data_plot
 from ..startup import startup_script
+from ..post_process import post_process
 
 
 def main():
@@ -127,6 +128,13 @@ def main():
     startup_parser.add_argument('config_path',
                                 help=('Path to simulation config'))
 
+    post_parser = command_parser.add_parser('post_simulation',
+                                            help=('Run post simulation '
+                                                  'calculations'))
+
+    post_parser.add_argument('post_work_path',
+                             help=('Path to workspace directory'))
+
     args = parser.parse_args()
 
     if 'formula' in args:
@@ -143,6 +151,9 @@ def main():
 
     elif 'config_path' in args:
         startup_script.start(args)
+
+    elif 'post_work_path' in args:
+        post_process.run_post_calculations(args.post_work_path)
 
 
 if __name__ == '__main__':

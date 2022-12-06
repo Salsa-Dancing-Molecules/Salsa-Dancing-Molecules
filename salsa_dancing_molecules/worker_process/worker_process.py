@@ -16,7 +16,7 @@ def start(path):
     Args:
         path: The path to the working directory.
     """
-    path = path.strip("/")
+    path = path.rstrip("/")
     while len(os.listdir(path+"/unbegun_simulations")) != 0:
         list_of_files = os.listdir(path+"/unbegun_simulations")
         current_file = list_of_files[0]

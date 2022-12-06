@@ -93,6 +93,11 @@ def main():
         'startup', help='Script for generating the necessary files to '
         'run the program')
 
+    startup_parser.add_argument('--api-key',
+                                help=('API key for materialsproject. '
+                                      'Only needed if such a material is '
+                                      'included in the configuration.'),
+                                type=str)
     startup_parser.add_argument('config_path',
                                 help=('Path to simulation config'))
 
@@ -111,7 +116,7 @@ def main():
         worker_process.start(args.work_path)
 
     elif 'config_path' in args:
-        startup_script.start(args.config_path)
+        startup_script.start(args)
 
 
 if __name__ == '__main__':

@@ -116,3 +116,37 @@ class MatClient(MPRester):
             saved_atoms.append(name)
 
         return saved_atoms
+
+
+def prepare_materials(api_key, output_path, materials):
+    """Download materials given with an "mp_" prefix.
+
+    materials is a list of chemical formulas prefixed with "mp_". Each
+    material in the list will be queried from Materialsproject,
+    pickled to output_path and a list of material names will be
+    returned.
+
+    arguments:
+        api_key: str         - Materialsproject API key
+        output_path: str     - path to output directory for saving
+                               material pickles
+        materials: list(str) - list of chemical formulas prefixed with "mp_"
+
+    returns:
+        materials: list(str) - string of names of the downloaded
+                               materials
+    """
+    client = MatClient(api_key)
+
+    # Keep track of all downloaded materials.
+    downloaded = []
+
+    # Iterate and download materials for each provided formula
+    # prefixed with mp_.
+    for material in materials:
+        # Strip prefix
+        name = material[3:]
+        downloaded.extend(client.pickle_atoms(name, output_path))
+
+    # Return without ".pickle" suffixes.
+    return [mat[:-7] for mat in downloaded]

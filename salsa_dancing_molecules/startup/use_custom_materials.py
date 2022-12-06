@@ -25,6 +25,10 @@ def materials_to_pickles(python_modules_path, work_path, material_names):
     spec.loader.exec_module(module)
 
     for material_name in material_names:
+        # Materials prefixed with mp_ are from Materialsproject and
+        # should be skipped.
+        if material_name.startswith('mp_'):
+            continue
         atoms_obj = getattr(module, material_name)
         pickle_file = open(work_path+"/materials/" +
                            material_name+".pickle", 'wb')

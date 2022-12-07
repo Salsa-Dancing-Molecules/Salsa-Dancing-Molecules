@@ -36,7 +36,7 @@ def start(args):
         # If we only have Materialproject materials, materials_path
         # might not exist in the configuration. Only process custom
         # materials if the path exists.
-        if "materials_path" in simulation_conf:
+        if "materials_path" in simulation_conf and not args.update_json:
             custom_materials = simulation_conf["materials_path"]
             if custom_materials[0] != '/':
                 print('Error: materials_path must be an absolute path!')

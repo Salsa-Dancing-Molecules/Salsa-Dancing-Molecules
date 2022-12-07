@@ -99,12 +99,17 @@ def main():
                                       'included in the configuration.'),
                                 type=str)
 
+    startup_parser.add_argument('--update-json',
+                                help=("Set this flag to only update the json"
+                                      " files for simulations. Material files"
+                                      " are ignored."),
+                                action='store_true')
     startup_parser.add_argument('--job',
                                 help=("Name of the job."),
                                 default="TFYA99",
                                 type=str)
 
-    startup_parser.add_argument('--use_devel',
+    startup_parser.add_argument('--use-devel',
                                 help=("The type of job to be run is 'devel'."),
                                 action='store_true')
 

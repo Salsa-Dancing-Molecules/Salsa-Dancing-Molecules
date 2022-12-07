@@ -32,9 +32,16 @@ def calculate_NVT_heat_capacity(config, t0):
     Output:
         int - time average heat capacity, time average over equalibrium
     """
+    a = config[-1]
+    mass = sum(a.get_masses())*units._amu  # change mass from u to kg
+
     temperatures = [atom.get_temperature() for atom in config]
     # equilibrium time average of resp.
     T = average(t0, temperatures)[-1]
     mean_squar = get_mean_square_of_tote(config, t0)[-1]
     squar_of_mean = get_square_of_mean_tote(config, t0)[-1]
-    return ((mean_squar - squar_of_mean) / (units.kB*(T**2)))
+
+    # return is in eV/(K * kg) so we need a unit conversion to change it to
+    # J/(K * kg)
+    eV_to_J = units._e
+    return eV_to_J*((mean_squar - squar_of_mean) / (units.kB*(T**2)))/mass

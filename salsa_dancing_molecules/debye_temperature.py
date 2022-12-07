@@ -8,9 +8,9 @@ def get_debye_temperature(traj_file, temperature, specific_heat_capacity):
     Read trajectory file and call calculation function.
 
     arguments:
-        traj_file               - trajectory file
-        temperature             - float
-        specific_heat_capacity  - float
+        traj_file:str                 - trajectory file
+        temperature:float             - Temperature average of the system
+        specific_heat_capacity:float  - specifict heat capacity of the system
 
     return:
         debye_temperature - float
@@ -27,9 +27,9 @@ def calculate_debye_temperature(configs, temperature, specific_heat_capacity):
     Calculate the debye temperature.
 
     arguments:
-        configs                 - list
-        temperature             - float
-        specific_heat_capacity  - float
+        configs: ase.io.trajectory.Trajectory - traj file containg atom-obj.
+        temperature:float             - Temperature average of the system
+        specific_heat_capacity:float  - specifict heat capacity of the system
 
     return:
         debye_temperature - float

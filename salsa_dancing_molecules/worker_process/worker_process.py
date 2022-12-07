@@ -6,7 +6,7 @@ runs the simulation according to the data.
 
 import os
 from .infiles_handler import handle_files
-from ..simulations.simulation import run
+from .simulation_starter import start_simulation
 
 
 def start(path):
@@ -32,7 +32,7 @@ def start(path):
                 sim_info, atoms_obj = handle_files(path +
                                                    "/started_simulations/" +
                                                    current_file)
-                run(sim_info, atoms_obj)
+                start_simulation(sim_info, atoms_obj)
             except Exception as e:
                 print(e)
                 filename = os.path.splitext(path+"/started_simulations/" +

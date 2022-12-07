@@ -33,7 +33,7 @@ def test_config_to_configs():
                          {"test1": "3",
                           "test2": "string",
                           "test3": "one_item",
-                          "test4": "B"},]
+                          "test4": "B"}, ]
     generated_out_list = generate_json.config_to_configs(in_dict)
     assert generated_out_list == expected_out_list
 

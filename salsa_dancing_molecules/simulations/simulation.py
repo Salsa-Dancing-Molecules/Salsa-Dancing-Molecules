@@ -81,6 +81,9 @@ def run(sim_info, atoms):
         sim_info - dictionary with information on the simulation.
         atoms - atoms object to be used.
     """
+    if "volume-scale" in sim_info:
+        scaling = float(sim_info["volume-scale"])
+        atoms.set_cell(atoms.get_cell() * scaling, scale_atoms=True)
     if type(sim_info["use-asap"]) is str:
         sim_info["use-asap"] = (sim_info["use-asap"].lower() == "true")
     choose_potential(sim_info["potential"],

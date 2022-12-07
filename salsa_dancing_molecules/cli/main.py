@@ -98,6 +98,32 @@ def main():
                                       'Only needed if such a material is '
                                       'included in the configuration.'),
                                 type=str)
+
+    startup_parser.add_argument('--job',
+                                help=("Name of the job."),
+                                default="TFYA99",
+                                type=str)
+
+    startup_parser.add_argument('--use_devel',
+                                help=("The type of job to be run is 'devel'."),
+                                action='store_true')
+
+    startup_parser.add_argument('--time',
+                                help=("Max time for the job. "
+                                      "Format: hh:mm:ss"),
+                                default="00:05:00",
+                                type=str)
+
+    startup_parser.add_argument('--nodes',
+                                help=("Number of nodes to be used."),
+                                default="1",
+                                type=str)
+
+    startup_parser.add_argument('--cores',
+                                help=("Number of cores to be used."),
+                                default="32",
+                                type=str)
+
     startup_parser.add_argument('config_path',
                                 help=('Path to simulation config'))
 

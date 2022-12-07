@@ -3,6 +3,7 @@ from .prepare_workspace import do_preparations
 from .use_custom_materials import materials_to_pickles
 from .config_module import read_configuration
 from .generate_json import convert_to_json
+from .script_generator import create_sbatch
 from ..materialsproject import prepare_materials as mp_prepare_materials
 import os
 import sys
@@ -73,3 +74,12 @@ def start(args):
             simulation_conf['material'].extend(downloaded_materials)
 
         convert_to_json(simulation_conf)
+    job = args.job if args.job else "error"
+    use_devel = args.use_devel
+    time = args.time if args.time else "error"
+    nodes = args.nodes if args.nodes else "error"
+    cores = args.cores if args.cores else "error"
+    if "error" in [job, time, nodes, cores]:
+        print("Argument(s) missing for sbatch script. No file witll be made.")
+    else:
+        create_sbatch(job, use_devel, time, nodes, cores, work_path)

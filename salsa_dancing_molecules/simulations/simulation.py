@@ -60,6 +60,7 @@ def choose_ensemble(ensemble, target_temperature, atoms):
         atoms - Atoms object to be used.
     Returns:
         dyn - dynamics object.
+
     """
     ensemble = ensemble.lower()
     if ensemble == "nve":
@@ -67,7 +68,7 @@ def choose_ensemble(ensemble, target_temperature, atoms):
     elif ensemble == "nvt":
         dyn = Andersen(atoms,
                        5 * units.fs,
-                       temperature_K=target_temperature,
+                       temperature_K=int(target_temperature),
                        andersen_prob=0.01)  # andersen_prob maybe configurable?
     else:
         raise Exception("Invalid ensemble.")
@@ -81,13 +82,15 @@ def run(sim_info, atoms):
         sim_info - dictionary with information on the simulation.
         atoms - atoms object to be used.
     """
+    if "volume-scale" in sim_info:
+        scaling = float(sim_info["volume-scale"])
+        atoms.set_cell(atoms.get_cell() * scaling, scale_atoms=True)
     if type(sim_info["use-asap"]) is str:
         sim_info["use-asap"] = (sim_info["use-asap"].lower() == "true")
     choose_potential(sim_info["potential"],
                      sim_info["kim-model"],
                      sim_info["use-asap"],
                      atoms)
-
     # Initialize the momenta from the chosen initial temperature.
     init_temp = int(sim_info["initial-temperature"])
     MaxwellBoltzmannDistribution(atoms,
@@ -95,7 +98,6 @@ def run(sim_info, atoms):
 
     output_path_traj = sim_info["traj_output_path"]
     output_path_csv = sim_info["csv_output_path"]
-
     # Create dynamics object for simulation.
     if "target-temperature" in sim_info:
         target_temperature = sim_info["target-temperature"]
@@ -107,7 +109,6 @@ def run(sim_info, atoms):
 
     traj = Trajectory(output_path_traj, "w", atoms)
     dyn.attach(traj.write, interval=100)
-
     # Generate different quantatives to save
     Var = Variables()
     Var.set_timestep(10)
@@ -121,7 +122,6 @@ def run(sim_info, atoms):
     dyn.attach(dynamics, interval=10)
     dynamics()
     dyn.run(int(sim_info["steps"]))
-
     # Convert the list to an array with given data types
     Var.list_to_array()
     # Upload the data to file

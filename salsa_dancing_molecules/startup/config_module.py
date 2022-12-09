@@ -1,5 +1,6 @@
 """Module containing configuration functions."""
 import configparser
+import numpy as np
 
 
 def string_to_list(s):
@@ -12,6 +13,12 @@ def string_to_list(s):
     """
     if s.startswith('[') and s.endswith(']'):
         return s.strip('][').split(',')
+    elif s.startswith('(') and s.endswith(')'):
+        values = [x.strip() for x in s.strip(')(').split(',')]
+        start = float(values[0])-float(values[1])
+        stop = float(values[0])+float(values[1])
+        result_list = np.around(np.linspace(start, stop, int(values[2])), 4)
+        return [str(x) for x in result_list]
     return s
 
 

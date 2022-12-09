@@ -15,21 +15,24 @@ def get_cohesive_energy(traj_file, t0):
 
     """
     configs = Trajectory(traj_file)
-    pot_energies = [atom.get_potential_energy() for atom in configs]
-    avg_pot_e = (sum(pot_energies[t0:]) / len(pot_energies[t0:]))
 
-    return calculate_cohesive_energy(configs, avg_pot_e)
+    return calculate_cohesive_energy(configs, t0)
 
 
-def calculate_cohesive_energy(configs, avg_pot_e):
-    """Calculate cohsive energy from time average potential energy.
+def calculate_cohesive_energy(configs, t0):
+    """Calculate cohsive energy.
 
     Input:
         configs:ase.io.trajectory.Trajectory -traj file containing atom objects
-        avg_pot_e: float               -average potential energy at equilibrium
+        t0: int         - timestep when equilibrium starts
 
     Output:
         cohesive energy for the system: float
 
+    Calculate cohesive energy from time-average potential energy
+    at equilibrium.
+
     """
+    pot_energies = [atom.get_potential_energy() for atom in configs]
+    avg_pot_e = (sum(pot_energies[t0:]) / len(pot_energies[t0:]))
     return -(avg_pot_e / configs[-1].get_global_number_of_atoms())

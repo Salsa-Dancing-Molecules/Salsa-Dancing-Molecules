@@ -7,6 +7,7 @@ from ..simulations import argon, nve
 from ..command_plot import data_plot
 from ..startup import startup_script
 from ..post_process import post_process
+from ..volume_process import volume_process
 
 
 def main():
@@ -135,6 +136,13 @@ def main():
     post_parser.add_argument('post_work_path',
                              help=('Path to workspace directory'))
 
+    volume_parser = command_parser.add_parser('volume_process',
+                                              help=('Run post volume-' +
+                                                    'simulation calculations'))
+
+    volume_parser.add_argument('volume_work_path',
+                               help=('Path to workspace directory'))
+
     args = parser.parse_args()
 
     if 'formula' in args:
@@ -154,6 +162,9 @@ def main():
 
     elif 'post_work_path' in args:
         post_process.run_post_calculations(args.post_work_path)
+
+    elif 'volume_work_path' in args:
+        volume_process.start(args.volume_work_path)
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@ import os
 from .equilibrium import get_equilibrium
 
 
-def get_bulk_properties(work_path, ensemble):
+def get_bulk_properties(traj_list, ensemble):
     """Get bulk properties.
 
     Calculate lattice constant, bulk modulus and get the trajectory file with
@@ -34,12 +34,10 @@ def get_bulk_properties(work_path, ensemble):
     avg_volumes = []
     # for each trajectory file, calculate average potential energy and volume
     # after the equilibrium time and save these to lists.
-    traj_dir = work_path.rstrip('/') + '/output/traj'
-    traj_list = [os.path.join(traj_dir, file) for file in os.listdir(traj_dir)]
     if len(traj_list) > 3:
         for traj_file in traj_list:
             configs = Trajectory(traj_file)
-            t0 = get_equilibrium(traj_file, ensemble)
+            t0 = get_equilibrium(configs, ensemble)
             pot_energies = [atom.get_potential_energy() for atom in configs]
             avg_energies.append(sum(pot_energies[t0:]) /
                                 len(pot_energies[t0:]))
@@ -65,18 +63,19 @@ def calculate_bulk_properties(traj_list, avg_energies, avg_volumes):
         optimal_traj: str - file name of the optimal trajectory file.
 
     """
+    error_message = None
     eos = EquationOfState(avg_volumes, avg_energies)
     try:
-        v0, _, B0 = eos.fit()
+        v0, _, b0 = eos.fit()
     except ValueError as e:
         print(e)
         print('Please try another guess of lattice constant.')
-        print('Bulk modulus and lattice constant could not be ' +
-              'calculated. No optimal volume found.')
-        return None
+        error_message = ('Bulk modulus and lattice constant could not be ' +
+                         'calculated. No optimal volume found. ')
+        return float('NaN')
 
     # unit conversion to get bulk modulus in GPa.
-    B = B0 / kJ * 1.0e24
+    b = b0 / kJ * 1.0e24
 
     # get the trajectory files that is the closest to the optimal volume.
     diff_array = np.absolute(avg_volumes - v0)
@@ -89,16 +88,26 @@ def calculate_bulk_properties(traj_list, avg_energies, avg_volumes):
     cell = atom.get_cell()
     cell = cell.fromcellpar(unit_cell)
     lattice = cell.get_bravais_lattice()
-    N = atom.get_global_number_of_atoms()
+    n = atom.get_global_number_of_atoms()
 
     # do appropritate calculation depending on lattice structure
     if 'FCC' in str(lattice):
-        a = (4 * v0 / float(N)) ** (1/3)
+        a = (4 * v0 / float(n)) ** (1/3)
 
     elif 'BCC' in str(lattice):
-        a = (2 * v0 / float(N)) ** (1/3)
+        a = (2 * v0 / float(n)) ** (1/3)
 
     elif 'CUB' in str(lattice):
-        a = (v0 / float(N)) ** (1/3)
+        a = (v0 / float(n)) ** (1/3)
 
-    return a, B, optimal_traj
+    else:
+        a = float('NaN')
+        error_message += ('Lattice structure was not recognized, ' +
+                          'no lattice constant could be determined. ')
+
+    result_dict = {}
+    result_dict['Trajectory file'] = optimal_traj
+    result_dict['Lattice constant'] = a
+    result_dict['Bulk modulus'] = b
+    result_dict['Error message'] = error_message
+    return result_dict

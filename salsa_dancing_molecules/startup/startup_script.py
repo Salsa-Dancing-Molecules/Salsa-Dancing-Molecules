@@ -65,6 +65,9 @@ def start(args):
                                                         work_path +
                                                         '/materials',
                                                         mp_materials)
+            if len(downloaded_materials) == 0:
+                print('Error: No Materialsproject materials found!')
+                sys.exit(1)
 
             # Replace all mp_ prefixed materials with the actual
             # downloaded materials.

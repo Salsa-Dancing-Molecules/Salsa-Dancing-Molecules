@@ -23,6 +23,7 @@ def run_post_calculations(work_path):
     for done_sim in done_list:
         f = open(os.path.join(done_path, done_sim))
         sim_info = json.load(f)
+        f.close()
         sim_results = post_simulation_calculation(sim_info)
         sim_file_name = os.path.splitext(done_sim)[0]
         sim_results["file_name"] = sim_file_name

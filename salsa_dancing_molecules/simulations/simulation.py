@@ -26,9 +26,9 @@ def choose_potential(potential, sim_info, use_asap, atoms):
     if potential == "openkim":  # use openkim
         try:
             from ase.calculators.kim import KIM
-            atoms.calc = KIM(sim_info['kim_model'])
+            atoms.calc = KIM(sim_info['kim-model'])
         except RuntimeError:
-            print(f'{sim_info["kim_model"]} is not a valid OpenKIM potential, '
+            print(f'{sim_info["kim-model"]} is not a valid OpenKIM potential, '
                   'will use standard Lennard-Jones potential')
             potential = 'lennard-jones'
         else:

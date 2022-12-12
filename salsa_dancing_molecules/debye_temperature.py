@@ -33,6 +33,7 @@ def calculate_debye(configs, temperature, specific_heat_capacity):
 
     return:
         debye_temperature - float
+        warning: bool     - False if under the low-temperature limit.
 
     This function assumes that the temperature is low. If temperature is high
     the results might not be accurate.

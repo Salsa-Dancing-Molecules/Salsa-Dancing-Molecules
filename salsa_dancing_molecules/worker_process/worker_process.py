@@ -11,7 +11,6 @@ from .infiles_handler import handle_files
 from .simulation_starter import start_simulation
 from ..post_process.post_simulation_calculation import (
                                                 post_simulation_calculation)
-from mpi4py import MPI
 
 
 def start(path):
@@ -22,6 +21,7 @@ def start(path):
         path: The path to the working directory.
     """
     path = path.rstrip("/")
+    from mpi4py import MPI
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     sim_calc_list = []

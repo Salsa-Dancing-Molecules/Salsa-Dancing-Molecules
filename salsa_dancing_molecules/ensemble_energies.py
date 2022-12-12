@@ -1,6 +1,7 @@
 """Calculate ensemble energy and ensemble square energy."""
 import numpy as np
 from .average import average
+import ase
 
 
 def get_kinetic_energies(a):
@@ -86,6 +87,10 @@ def get_mean_square_of_tote(config, t0):
     """
     mean_square_of_tote = []
     for a in config:
-        etot = get_kinetic_energies(a) + a.get_potential_energies()
+        try:
+            potential = a.get_potential_energies()
+        except ase.calculators.calculator.PropertyNotImplementedError as e:
+            potential = a.get_potential_energy() / len(a)
+        etot = np.add(get_kinetic_energies(a), potential)
         mean_square_of_tote.append(np.dot(etot, etot) / len(a))
     return average(t0, mean_square_of_tote)

@@ -1,13 +1,13 @@
 """Module for calling calculations of the post simulation values."""
 
 from ase.io.trajectory import Trajectory
-from ..equilibrium import get_eqiulibrium
+from ..equilibrium import get_equilibrium
 from ..average import average
 from ..mean_square_displacement import calculate_msd
 from ..self_diffusion_coefficient import calculate_self_diffusion_coefficient
 from ..capacity_NVE import calculate_NVE_heat_capacity
 from ..capacity_NVT import calculate_NVT_heat_capacity
-from ..debye_temperature import calculate_debye_temperature
+from ..debye_temperature import calculate_debye
 from ..cohesive_energy import calculate_cohesive_energy
 
 import csv
@@ -21,7 +21,7 @@ def get_column_from_csv(csv_path, col_name):
         csv_path: string - path to csv file to be read.
         col_name: string - name of column to be extracted.
 
-    Returns:
+    return:
         return_list: list - list of values in specified columns
     """
     f = open(csv_path, "r")
@@ -39,7 +39,7 @@ def post_simulation_calculation(sim_info):
     Args:
         sim_info: dict - Dictionary with info on simulation.
 
-    returns
+    return:
         result_dict                 - dictionary containing:
             MSD_avr                     - list
             self_diffusion_coefficient  - float
@@ -60,7 +60,14 @@ def post_simulation_calculation(sim_info):
     configs = Trajectory(traj_path)
 
     # Calculate the equilibrium time of the system
-    t0 = get_eqiulibrium(configs, ensemble)
+    t0, equilibrium_warning = get_equilibrium(configs, ensemble)
+
+    if equilibrium_warning:
+        equilibrium_warning = ("Warning: Equilibrium detected close to the "
+                               "end of the simulation (last 10%). True "
+                               "equilibrium might not have been reached.")
+    else:
+        equilibrium_warning = ""
 
     # Calculate the temperature average of the system
     temperature = np.array(temperature)
@@ -75,8 +82,16 @@ def post_simulation_calculation(sim_info):
     elif ensemble == 'NVT':
         heat_capacity = calculate_NVT_heat_capacity(configs, t0)
 
-    debye_temperature = calculate_debye_temperature(configs, temperature_avr,
-                                                    heat_capacity)
+    debye_temperature, debye_warning = calculate_debye(configs,
+                                                       temperature_avr,
+                                                       heat_capacity)
+
+    if debye_warning:
+        debye_warning = ("Warning: Debye temperature is low compared to the "
+                         "temperature. The calculated value for debye "
+                         "temperature might not be accurate.")
+    else:
+        debye_warning = ""
 
     cohesive_energy = calculate_cohesive_energy(configs, t0)
 
@@ -86,5 +101,7 @@ def post_simulation_calculation(sim_info):
     result_dict["heat_capacity"] = heat_capacity
     result_dict["debye_temperature"] = debye_temperature
     result_dict["cohesive_energy"] = cohesive_energy
+    result_dict["equilibrium_warning"] = equilibrium_warning
+    result_dict["debye_warning"] = debye_warning
 
     return result_dict

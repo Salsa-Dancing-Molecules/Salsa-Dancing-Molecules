@@ -5,7 +5,7 @@ import numpy as np
 from asap3 import Trajectory
 
 
-def get_eqiulibrium(configs, ensemble='NVE'):
+def get_equilibrium(configs, ensemble='NVE'):
     """
     Find the eqiulibrium of a system.
 
@@ -14,6 +14,7 @@ def get_eqiulibrium(configs, ensemble='NVE'):
 
     Output:
         eqiulibrium: int   - timestep when equilibrium starts.
+        warning: bool      - True if equilibrium is reached in the last 10%
     """
     if ensemble == 'NVE':
         list = [atoms.get_temperature() for atoms in configs]
@@ -24,4 +25,7 @@ def get_eqiulibrium(configs, ensemble='NVE'):
     list = np.array(list, dtype=np.float64)
     [equilibrium, _, _] = detect_equilibration(list)
 
-    return equilibrium
+    # Check if equilibrium is reached in the last 10% of the timesteps
+    warning = 0.9 < equilibrium/len(list)
+
+    return equilibrium, warning

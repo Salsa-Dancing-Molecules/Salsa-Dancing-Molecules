@@ -12,6 +12,13 @@ def start_simulation(sim_info, atoms):
     """
     repeat = int(sim_info["repeat"])
     symbols = atoms.symbols
+
+    """pbc will start as True and will only change if "False" is given """
+    if "pbc" in sim_info:
+        not_pbc = (sim_info["pbc"] == "False")
+        if not_pbc:
+            atoms.set_pbc(False)
+
     if repeat > 0:
         atoms = atoms.repeat(repeat)
 

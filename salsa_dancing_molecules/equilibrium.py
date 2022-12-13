@@ -2,7 +2,6 @@
 
 from pymbar.timeseries import detect_equilibration
 import numpy as np
-from asap3 import Trajectory
 
 
 def get_equilibrium(configs, ensemble='NVE'):

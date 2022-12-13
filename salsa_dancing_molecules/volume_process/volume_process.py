@@ -14,14 +14,22 @@ from datetime import datetime
 
 
 def group_by_volume(sim_info_list):
-    """Group volume simulations.
+    """Group volume-simulations.
 
     Input:
-        sim_info_list: list  -list containing sim_info from all json-files
+        sim_info_list: list  -list containing simulation information from all
+                              json-files
 
     Output:
-        sim_info_group_list:list  -list containg list with all sim_info from
-                                   the same volume simulation
+        sim_info_group_list: list  -list containg lists. All simulations
+                                    from the same volume-simulation will be
+                                    grouped together in one sub-list.
+        csv_list: list             -list containging csv-file names from
+                                    simulations that have not been simulated
+                                    for varying volume.
+        traj_list: list            -list containing traj-file names of
+                                    files that have not been simulated for
+                                    varying volume.
 
     """
     sim_info_groups_list = []
@@ -102,6 +110,8 @@ def start(path):
         csv_list.append(csv_file)
     f.close()
 
+    # One processor core deletes all files except those corresponding
+    # to the optimal volume.
     if rank == 0:
         for file in os.listdir(path+"output/traj/"):
             remove_file = True
@@ -112,3 +122,5 @@ def start(path):
             if remove_file:
                 os.remove(path+"output/traj/"+file)
                 os.remove(path+"output/csv/"+file.rstrip('.traj') + '.csv')
+                os.remove(path+"done_simulations/"+file.rstrip('.traj') +
+                          '.json')

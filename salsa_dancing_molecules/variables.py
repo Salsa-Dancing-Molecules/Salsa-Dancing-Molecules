@@ -10,14 +10,16 @@ import numpy as np
 class Variables:
     """Creates object of each variable."""
 
-    potential_energies = []
-    kinetic_energies = []
-    atomic_pressures = []
-    temperatures = []
+    def __init__(self):
+        """Initialise an empty data collection."""
+        self.potential_energies = []
+        self.kinetic_energies = []
+        self.atomic_pressures = []
+        self.temperatures = []
 
-    time = []
-    timestep = 0
-    time_counter = 0
+        self.time = []
+        self.timestep = 0
+        self.time_counter = 0
 
     def Snapshot(self, a):
         """Take a snapshot of the state during the dynamics."""

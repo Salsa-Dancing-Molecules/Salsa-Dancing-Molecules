@@ -10,7 +10,10 @@ import json
 import os
 import csv
 from ..bulk_properties import get_bulk_properties
+from ..lindemann import get_lindemann_parameter
+from ..equilibrium import get_equilibrium
 from datetime import datetime
+from asap3 import Trajectory
 
 
 def group_by_volume(sim_info_list):
@@ -88,7 +91,21 @@ def start(path):
     for group_list in sim_info_groups_list:
         group = [sim_info['traj_output_path'] for sim_info in group_list]
         ensembles = [sim_info['ensemble'] for sim_info in group_list]
-        results_list.append(get_bulk_properties(group, ensembles[0]))
+        result_dict = get_bulk_properties(group, ensembles[0])
+        if result_dict['Lattice constant']:
+            configs = Trajectory(result_dict['Trajectory file'])
+            # Calculate the equilibrium time of the system
+            t0, equilibrium_warning = get_equilibrium(configs, ensembles[0])
+            parameter_list, criterion = get_lindemann_parameter(
+                                            result_dict['Trajectory file'],
+                                            result_dict['Lattice constant'],
+                                            t0)
+        else:
+            parameter_list = None
+            criterion = None
+        result_dict['Lindeman parameter over time'] = parameter_list
+        result_dict['Lindeman criterion'] = criterion
+        results_list.append(result_dict)
 
     if not os.path.exists(path.rstrip("/")+"/volume_process_output"):
         os.mkdir(path.rstrip("/")+"/volume_process_output")

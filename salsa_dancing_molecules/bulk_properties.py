@@ -37,7 +37,7 @@ def get_bulk_properties(traj_list, ensemble):
     if len(traj_list) > 3:
         for traj_file in traj_list:
             configs = Trajectory(traj_file)
-            t0 = get_equilibrium(configs, ensemble)
+            t0, _ = get_equilibrium(configs, ensemble)
             pot_energies = [atom.get_potential_energy() for atom in configs]
             avg_energies.append(sum(pot_energies[t0:]) /
                                 len(pot_energies[t0:]))

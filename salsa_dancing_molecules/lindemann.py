@@ -56,8 +56,9 @@ def calculate_lindemann_parameter(a, msd, msd_avr, lattice):
     lind_parameters = np.divide(np.sqrt(msd), d)
 
     if np.sqrt(msd_avr) / d > 0.1:
-        criterion = True
+        criterion = ('According to the Lindemann criterion the material ' +
+                     'have melted.')
     else:
-        criterion = False
+        criterion = None
 
     return lind_parameters, criterion

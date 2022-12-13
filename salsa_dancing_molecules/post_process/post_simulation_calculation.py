@@ -23,6 +23,7 @@ def get_column_from_csv(csv_path, col_name):
 
     return:
         return_list: list - list of values in specified columns
+
     """
     f = open(csv_path, "r")
     file_data = csv.DictReader(f)
@@ -49,6 +50,7 @@ def post_simulation_calculation(sim_info):
 
     To get the average mean square displacement from equilibrium-time to the
     last time-step take the last element of MSD_avr.
+
     """
     traj_path = sim_info["traj_output_path"]
     csv_path = sim_info["csv_output_path"]

@@ -13,6 +13,7 @@ def do_preparations(work_path):
     list_of_folders = ["/unbegun_simulations",
                        "/started_simulations",
                        "/done_simulations",
+                       "/post_process_output",
                        "/output/traj",
                        "/output/csv",
                        "/materials"]

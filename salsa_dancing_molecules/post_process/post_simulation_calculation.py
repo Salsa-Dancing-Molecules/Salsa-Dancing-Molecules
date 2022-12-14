@@ -98,7 +98,7 @@ def post_simulation_calculation(sim_info):
     cohesive_energy = calculate_cohesive_energy(configs, t0)
 
     result_dict = {}
-    result_dict["MSD_avr"] = MSD_avr
+    result_dict["MSD_avr"] = MSD_avr[-1]
     result_dict["self_diffusion_coefficient"] = self_diffusion_coefficient
     result_dict["heat_capacity"] = heat_capacity
     result_dict["debye_temperature"] = debye_temperature

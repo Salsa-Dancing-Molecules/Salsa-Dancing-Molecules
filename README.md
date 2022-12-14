@@ -66,14 +66,13 @@ from the project's top directory to enter the development environment.
 
 In the project top directory, do
 
-    conda create -n salsa_dancing_molecules
-    source activate salsa_dancing_molecules
-    module load buildenv-intel/2018a-eb # needed to get right packages on Sigma
+    module load Anaconda/2021.05-nsc1
+    conda create -n salsa-dancing-molecules
+    conda activate salsa-dancing-molecules
     conda install pip
-    pip install numpy # needed because of broken asap3 dependencies
+    conda install -c conda-forge numpy asap3 openkim-models kim-api kimpy ase mpi4py
     pip install -e .
-    conda install -c conda-forge asap3
-    conda install -c conda-forge openkim_models kim-api kimpy
+
 
 and answer yes to all questions to create an environment called
 salsa_dancing_molecules, activate it and install Salsa Dancing
@@ -87,7 +86,7 @@ which will run the current source code straight from the project.
 The installation step only needs to be done once and during future
 development sessions, it is enough to issue
 
-    source activate salsa_dancing_molecules
+    conda activate salsa-dancing-molecules
 
 to enter the development environment.
 

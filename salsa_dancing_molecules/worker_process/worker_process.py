@@ -21,9 +21,9 @@ def start(path):
         path: The path to the working directory.
     """
     path = path.rstrip("/")
-    from mpi4py import MPI
+    """from mpi4py import MPI
     comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
+    rank = comm.Get_rank()"""
     sim_calc_list = []
     while len(os.listdir(path+"/unbegun_simulations")) != 0:
         list_of_files = os.listdir(path+"/unbegun_simulations")
@@ -57,7 +57,7 @@ def start(path):
                 sim_calc_list.append(post_simulation_calculation(sim_info))
     if not os.path.exists(path+"/post_process_output"):
         os.mkdir(path+"/post_process_output")
-    results_file_name = "temp_"+str(rank)+".csv"
+    """results_file_name = "temp_"+str(rank)+".csv"
     results_file_name = (path.rstrip('/') + "/post_process_output/" +
                          results_file_name)
     f = open(results_file_name, "w+")
@@ -89,4 +89,4 @@ def start(path):
         f.close()
         for file in os.listdir(path+"/post_process_output"):
             if file.startswith("temp_"):
-                os.remove(path+"/post_process_output/"+file)
+                os.remove(path+"/post_process_output/"+file)"""

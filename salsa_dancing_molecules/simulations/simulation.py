@@ -2,7 +2,7 @@
 from ..lennardjonesparse import parse_lj_params
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
-from ase.md.andersen import Andersen
+from ase.md.langevin import Langevin
 from ase import units
 from asap3 import Trajectory
 from ..variables import Variables
@@ -66,10 +66,10 @@ def choose_ensemble(ensemble, target_temperature, atoms):
     if ensemble == "nve":
         dyn = VelocityVerlet(atoms, 5 * units.fs)
     elif ensemble == "nvt":
-        dyn = Andersen(atoms,
-                       5 * units.fs,
-                       temperature_K=int(target_temperature),
-                       andersen_prob=0.01)  # andersen_prob maybe configurable?
+        dyn = Langevin(atoms,
+                       1 * units.fs,
+                       temperature_K=float(target_temperature),
+                       friction=0.05)
     else:
         raise Exception("Invalid ensemble.")
     return dyn

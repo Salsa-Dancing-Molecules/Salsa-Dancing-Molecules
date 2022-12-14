@@ -31,9 +31,9 @@ def create_sbatch(job, use_devel, time, nodes, cores, work_path):
               "export MKL_NUM_THREADS=1\n" +
               "export NUMEXPR_NUM_THREADS=1\n" +
               "export OMP_NUM_THREADS=1\n\n" +
-              "source activate salsa_dancing_molecules\n" +
-              "salsa-dancing-molecules -h\n" +
-              "# salsa-dancing-molecules worker " + work_path +
+              "module load Anaconda/2021.05-nsc1\n" +
+              "conda activate salsa-dancing-molecules\n" +
+              "mpprun salsa-dancing-molecules worker " + work_path +
               "\n")
     base_name = "./run_workers"
     if os.path.exists(base_name+".q"):

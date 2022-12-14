@@ -1,11 +1,22 @@
 """Module containing adapters for conversions to OPTIMADE formats."""
 
-from optimade.models import Species
-from optimade.models import StructureResource
-from optimade.models import StructureResourceAttributes
+from .models import (
+    SimulationResult,
+    SimulationResultAttributes,
+)
+
+from optimade.models import (
+    Species,
+    StructureResource,
+    StructureResourceAttributes,
+    Link,
+)
 from ase import Atoms
 
+import csv
+import json
 import numpy
+import pickle
 import uuid
 from time import time as now
 from collections import Counter
@@ -224,3 +235,64 @@ def get_optimade_structure(atoms):
     )
 
     return StructureResource(id=str(uuid.uuid1()), attributes=attributes)
+
+
+def get_optimade_data(result_path, workspace_path,
+                      base_url='https://example.com'):
+    """Get a generator for converting simulation results to OPTIMADE format.
+
+    Get a generator that generates OPTIMADE compliant entries from
+    simulation output. The base_url argument is used for generating
+    link references between the different entries and should be set to
+    the URL from which the database will be served.
+
+    arguments:
+        result_path: str    - path to a post process results CSV file
+        workspace_path: str - path to a simulation workspace
+        base_url: str       - URL from which the OPTIMADE database
+                              will be served
+
+    returns:
+        optimade_itr: generator of StructureResource, SimulationResult -
+                      generates pairs of an OPTIMADE structure entry
+                      with a corresponding OPTIMADE calculation
+    """
+    calculations = []
+    structures = []
+    with open(result_path, 'r') as f:
+        reader = csv.DictReader(f)
+        for entry in reader:
+            diff_coeff=entry['self_diffusion_coefficient']
+            attr = SimulationResultAttributes(
+                last_modified=int(now()),
+                _salsa_msd_average=entry['MSD_avr'],
+                _salsa_self_diffusion_coeff=diff_coeff,
+                _salsa_heat_capacity=entry['heat_capacity'],
+                _salsa_debye_temperature=entry['debye_temperature'],
+                _salsa_cohesive_energy=entry['cohesive_energy'],
+                _salsa_equilibrium_warning=entry['equilibrium_warning'],
+                _salsa_debye_warning=entry['debye_warning'],
+            )
+            sim_res = SimulationResult(id=str(uuid.uuid1()), attributes=attr)
+
+            conf_path = (f'{workspace_path}/done_simulations/'
+                         f'{entry["file_name"]}.json')
+            with open(conf_path, 'r') as conf_file:
+                conf = json.load(conf_file)
+            with open(conf['material'], 'rb') as material_file:
+                material = pickle.load(material_file)
+            struct = get_optimade_structure(material)
+
+            struct_link = Link(
+                href=f'{base_url}/structures/{struct.id}',
+                meta={'description': f'Calculation simulation structure.'},
+            )
+            sim_res.links = struct_link
+
+            calc_link = Link(
+                href=f'{base_url}/calculations/{sim_res.id}',
+                meta={'description': f'Calcultion for structure.'},
+            )
+            struct.links = calc_link
+
+            yield struct, sim_res

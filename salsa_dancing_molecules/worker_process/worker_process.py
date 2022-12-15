@@ -6,6 +6,7 @@ runs the simulation according to the data.
 import os
 import csv
 import json
+import uuid
 from datetime import datetime
 from .infiles_handler import handle_files
 from .simulation_starter import start_simulation
@@ -145,9 +146,7 @@ def start(path):
         path: The path to the working directory.
     """
     path = path.rstrip("/")
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
+    rank = str(uuid.uuid1())
 
     # List for storing post simulation calculation results.
     sim_calc_list = []

@@ -21,7 +21,7 @@ def get_bulk_properties(traj_list, ensemble):
     the optimal volume.
 
     args:
-        work_path:str     - name of work path
+        traj_list:list    - list of traj files
         ensemble:str      - the ensemble for the system, ei 'NVT' or 'NVE'
 
     returns:

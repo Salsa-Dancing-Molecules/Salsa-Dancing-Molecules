@@ -27,7 +27,7 @@ class TestPickle:
 
     def setup_class(self):
         """Initialise the tests."""
-        self.client = MatClient('afakeapikey')
+        self.client = MatClient('a' * 32)
         self.atom = Atom(uuid.uuid4())
 
     def test_collision_without_id(self):

@@ -16,25 +16,27 @@ def create_sbatch(job, use_devel, time, nodes, cores, work_path):
     reservation = ""
     if use_devel:
         reservation = "#SBATCH --reservation devel\n"
-    script = ("#!/bin/bash\n" +
-              "#\n" +
-              "#SBATCH -J " + job + "\n" +
-              "#SBATCH -A LiU-compute-2022-29\n" +
-              reservation +
-              "#SBATCH -t " + time + "\n" +
-              "#SBATCH -N " + nodes + "\n" +
-              "#SBATCH -n " + cores + "\n" +
-              "#SBATCH --exclusive\n"
-              "#\n" +
-              "export NSC_MODULE_SILENT=1\n" +
-              "export OPENBLAS_NUM_THREADS=1\n" +
-              "export MKL_NUM_THREADS=1\n" +
-              "export NUMEXPR_NUM_THREADS=1\n" +
-              "export OMP_NUM_THREADS=1\n\n" +
-              "module load Anaconda/2021.05-nsc1\n" +
-              "conda activate salsa-dancing-molecules\n" +
-              "mpprun salsa-dancing-molecules worker " + work_path +
-              "\n")
+    script = (
+        "#!/bin/bash\n"
+        "#\n"
+        f"#SBATCH -J {job}\n"
+        "#SBATCH -A LiU-compute-2022-29\n" +
+        f"{reservation}"
+        f"#SBATCH -t {time}\n"
+        f"#SBATCH -N {nodes}\n"
+        f"#SBATCH -n {cores}\n"
+        "#SBATCH --exclusive\n"
+        "#\n"
+        "export NSC_MODULE_SILENT=1\n"
+        "export OPENBLAS_NUM_THREADS=1\n"
+        "export MKL_NUM_THREADS=1\n"
+        "export NUMEXPR_NUM_THREADS=1\n"
+        "export OMP_NUM_THREADS=1\n\n"
+        "module load Anaconda/2021.05-nsc1\n"
+        "conda activate salsa-dancing-molecules\n"
+        f"srun -N {nodes} -n {cores} salsa-dancing-molecules worker "
+        f"{work_path}\n"
+    )
     base_name = "./run_workers"
     if os.path.exists(base_name+".q"):
         i = 1

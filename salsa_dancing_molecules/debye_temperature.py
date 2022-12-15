@@ -38,9 +38,12 @@ def calculate_debye(configs, temperature, specific_heat_capacity):
     This function assumes that the temperature is low. If temperature is high
     the results might not be accurate.
     """
-    N = len(configs[0])  # Number of atoms
+    a = configs[0]
+    N = len(a)  # Number of atoms
+    mass = sum(a.get_masses())*units._amu  # change mass from u to kg
+    heat_capacity = specific_heat_capacity*mass
     debye_temperature = (temperature*((12*units.pi**4*N*units._k)/(5 *
-                         specific_heat_capacity))**(1/3))
+                         heat_capacity))**(1/3))
     warning = 0.3 < temperature/debye_temperature
 
     return debye_temperature, warning

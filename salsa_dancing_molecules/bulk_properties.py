@@ -25,9 +25,8 @@ def get_bulk_properties(traj_list, ensemble):
         ensemble:str      - the ensemble for the system, ei 'NVT' or 'NVE'
 
     returns:
-        a: float          - lattice constant (in Angstrom).
-        B: float          - bulk modulus (in GPa).
-        optimal_traj: str - path / file name of the optimal trajectory file.
+        result_dict: dict - dictionary containing lattice constant, bulk
+                            modulus, trajectory file name and error message
 
     """
     avg_energies = []
@@ -44,9 +43,21 @@ def get_bulk_properties(traj_list, ensemble):
             volumes = [atom.get_volume() for atom in configs]
             avg_volumes.append(sum(volumes[t0:]) / len(volumes[t0:]))
 
-        return calculate_bulk_properties(traj_list, avg_energies, avg_volumes)
+        a, b, optimal_traj, error_message = calculate_bulk_properties(
+                                                traj_list,
+                                                avg_energies,
+                                                avg_volumes)
     else:
-        print('Amount of trajectory files must be 4 or more.')
+        error_message = 'Amount of trajectory files must be 4 or more.'
+        a, b, optimal_traj = float('Nan'), float('Nan'), None
+
+    result_dict = {}
+    result_dict['Trajectory file'] = optimal_traj
+    result_dict['Lattice constant'] = a
+    result_dict['Bulk modulus'] = b
+    result_dict['Error message'] = error_message
+
+    return result_dict
 
 
 def calculate_bulk_properties(traj_list, avg_energies, avg_volumes):
@@ -61,9 +72,10 @@ def calculate_bulk_properties(traj_list, avg_energies, avg_volumes):
         a: float          - lattice constant (in Angstrom).
         B: float          - bulk modulus (in GPa).
         optimal_traj: str - file name of the optimal trajectory file.
+        error_message: str - message if error.
 
     """
-    error_message = None
+    error_message = ''
     eos = EquationOfState(avg_volumes, avg_energies)
     try:
         v0, _, b0 = eos.fit()
@@ -72,7 +84,7 @@ def calculate_bulk_properties(traj_list, avg_energies, avg_volumes):
         print('Please try another guess of lattice constant.')
         error_message = ('Bulk modulus and lattice constant could not be ' +
                          'calculated. No optimal volume found. ')
-        return float('NaN')
+        return float('Nan'), float('Nan'), None, error_message
 
     # unit conversion to get bulk modulus in GPa.
     b = b0 / kJ * 1.0e24
@@ -105,9 +117,4 @@ def calculate_bulk_properties(traj_list, avg_energies, avg_volumes):
         error_message += ('Lattice structure was not recognized, ' +
                           'no lattice constant could be determined. ')
 
-    result_dict = {}
-    result_dict['Trajectory file'] = optimal_traj
-    result_dict['Lattice constant'] = a
-    result_dict['Bulk modulus'] = b
-    result_dict['Error message'] = error_message
-    return result_dict
+    return a, b, optimal_traj, error_message

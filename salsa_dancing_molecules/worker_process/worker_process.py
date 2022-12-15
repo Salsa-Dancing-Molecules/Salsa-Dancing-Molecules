@@ -179,7 +179,3 @@ def start(path):
 
     if len(sim_calc_list) > 0:
         post_process_write_temporary(path, rank, sim_calc_list)
-
-    if rank == 0:
-        # FIXME: We need to wait for all processes to finish before doing this.
-        post_process_all_files(path)

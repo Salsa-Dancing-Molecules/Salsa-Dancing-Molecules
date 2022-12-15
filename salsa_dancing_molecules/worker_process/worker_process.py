@@ -6,6 +6,7 @@ runs the simulation according to the data.
 import os
 import csv
 import json
+import sys
 import uuid
 from datetime import datetime
 from .infiles_handler import handle_files
@@ -178,3 +179,6 @@ def start(path):
 
     if len(sim_calc_list) > 0:
         post_process_write_temporary(path, rank, sim_calc_list)
+
+    # When the simulation is done, exit with exit code 0, i.e. success.
+    sys.exit(0)

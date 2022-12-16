@@ -73,11 +73,9 @@ def start(path):
         path: The path to the working directory.
 
     """
-    done_path = path.rstrip("/")+"/done_simulations"
+    path = path.rstrip("/")
+    done_path = path+"/done_simulations"
     sim_info_list = []
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
 
     for file in os.listdir(done_path):
         f = open(os.path.join(done_path, file))
@@ -107,37 +105,35 @@ def start(path):
         result_dict['Lindeman criterion'] = criterion
         results_list.append(result_dict)
 
-    if not os.path.exists(path.rstrip("/")+"/volume_process_output"):
-        os.mkdir(path.rstrip("/")+"/volume_process_output")
+    post_process_dir = f'{path}/post_process_output'
+
+    # Iterate over all result files in the post process directory and read them
+    # into memory.
+    post_calc_info = []
+    for file in os.listdir(post_process_dir):
+        if file.startswith("temp_"):
+            with open(f'{post_process_dir}/{file}') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    post_calc_info.append(row)
 
     # Write to csv-file
     now = datetime.now()
     dt_string = now.strftime("%d-%m-%y_%H_%M_%S")
-    results_file_name = "volume_process_"+dt_string+".csv"
-    results_file_name = (path.rstrip('/') + "/volume_process_output/" +
+    results_file_name = "post_process_"+dt_string+".csv"
+    results_file_name = (path + "/post_process_output/" +
                          results_file_name)
     f = open(results_file_name, "w+")
-    fieldnames = results_list[0].keys()
+    fieldnames = list(results_list[0].keys())+list(post_calc_info[0].keys())
     writer = csv.DictWriter(f, fieldnames)
     writer.writeheader()
+    for post_calc_dict in post_calc_info:
+        writer.writerow(post_calc_dict)
     for result_dict in results_list:
         writer.writerow(result_dict)
-        traj_list.append(result_dict['Trajectory file'])
-        csv_file = result_dict['Trajectory file'].rstrip('.traj') + '.csv'
-        csv_list.append(csv_file)
     f.close()
 
-    # One processor core deletes all files except those corresponding
-    # to the optimal volume.
-    if rank == 0:
-        for file in os.listdir(path+"output/traj/"):
-            remove_file = True
-            for file_name in traj_list:
-                if str(file) in file_name:
-                    remove_file = False
-                    break
-            if remove_file:
-                os.remove(path+"output/traj/"+file)
-                os.remove(path+"output/csv/"+file.rstrip('.traj') + '.csv')
-                os.remove(path+"done_simulations/"+file.rstrip('.traj') +
-                          '.json')
+    # Clean all temporary files.
+    for file in os.listdir(post_process_dir):
+        if file.startswith("temp_"):
+            os.remove(f'{post_process_dir}/{file}')

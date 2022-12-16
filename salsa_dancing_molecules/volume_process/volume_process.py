@@ -9,6 +9,7 @@ calculation of lattice constant and bulk modulus.
 import json
 import os
 import csv
+import numpy as np
 from ..bulk_properties import get_bulk_properties
 from ..lindemann import get_lindemann_parameter
 from ..equilibrium import get_equilibrium
@@ -90,13 +91,17 @@ def start(path):
         group = [sim_info['traj_output_path'] for sim_info in group_list]
         ensembles = [sim_info['ensemble'] for sim_info in group_list]
         result_dict = get_bulk_properties(group, ensembles[0])
-        if result_dict['Lattice constant']:
+        if not result_dict['Lattice constant'] is None or float('NaN'):
             configs = Trajectory(result_dict['Trajectory file'])
             # Calculate the equilibrium time of the system
             t0, equilibrium_warning = get_equilibrium(configs, ensembles[0])
+            if type(result_dict['Lattice constant']) == np.ndarray:
+                a = result_dict['Lattice constant'][0]  # shortest vector
+            else:
+                a = result_dict['Lattice constant']
             parameter_list, criterion = get_lindemann_parameter(
                                             result_dict['Trajectory file'],
-                                            result_dict['Lattice constant'],
+                                            a,
                                             t0)
         else:
             parameter_list = None

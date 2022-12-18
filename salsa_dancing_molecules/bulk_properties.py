@@ -80,7 +80,6 @@ def calculate_bulk_properties(traj_list, avg_energies, avg_volumes):
     try:
         v0, _, b0 = eos.fit()
     except ValueError as e:
-        print(e)
         print('Please try another guess of lattice constant.')
         error_message = ('Bulk modulus and lattice constant could not be ' +
                          'calculated. No optimal volume found. ')
@@ -113,8 +112,15 @@ def calculate_bulk_properties(traj_list, avg_energies, avg_volumes):
         a = (v0 / float(n)) ** (1/3)
 
     else:
-        a = float('NaN')
+        a = unit_cell
         error_message += ('Lattice structure was not recognized, ' +
-                          'no lattice constant could be determined. ')
+                          'cell lengths and angles for the cell, ' +
+                          'taken from the simulation with volume ' +
+                          'closest to the optimal volume, will be ' +
+                          'used instead of calculating the lattice ' +
+                          'from the optimal volume. Repeat need to ' +
+                          'be 1, otherwise cell lengths ' +
+                          'need to be post processed to get lattice ' +
+                          'constant.')
 
     return a, b, optimal_traj, error_message

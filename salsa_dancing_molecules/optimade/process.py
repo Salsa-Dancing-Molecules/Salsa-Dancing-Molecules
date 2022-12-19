@@ -1,6 +1,32 @@
 """Convert data to OPTIMADE format."""
 
+import json
+
 from .adapters import get_optimade_data
+
+
+def to_json(struct):
+    """Convert an OPTIMADE structure to json.
+
+    The python implementation of the OPTIMADE server expects the
+    attribute fields to be present directly in the entry and not under
+    the attributes key. Move all attribute entries up into the
+    structure itself.
+
+    arguments:
+        struct: optimade structure - structure to convert to json
+
+    returns:
+        json: str - json representation of the OPTIMADE data
+    """
+    data = json.loads(struct.json())
+    attributes = data['attributes']
+
+    for key, value in attributes.items():
+        data[key] = value
+    data.pop('attributes')
+
+    return json.dumps(data)
 
 
 def run(result_csv, workspace, base_url, json_out):
@@ -22,6 +48,19 @@ def run(result_csv, workspace, base_url, json_out):
     """
     with (open(f'{json_out}structures.json', 'w') as structs,
           open(f'{json_out}calculations.json', 'w') as calcs):
+        structs.write('[')
+        calcs.write('[')
+        first = True
+
         for struct, calc in get_optimade_data(result_csv, workspace, base_url):
-            structs.write(struct.json())
-            calcs.write(calc.json())
+            if not first:
+                structs.write(',')
+                calcs.write(',')
+            else:
+                first = False
+
+            structs.write(to_json(struct))
+            calcs.write(to_json(calc))
+
+        structs.write(']')
+        calcs.write(']')

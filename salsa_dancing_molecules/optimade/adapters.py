@@ -16,10 +16,11 @@ from ase import Atoms
 import csv
 import json
 import numpy
+import os
 import pickle
 import uuid
-from time import time as now
 from collections import Counter
+from time import time as now
 
 
 def fix_length_anon_gen(length, accumulator=''):
@@ -237,6 +238,88 @@ def get_optimade_structure(atoms):
     return StructureResource(id=str(uuid.uuid1()), attributes=attributes)
 
 
+def get_optimade_calculation_single(entry):
+    """Return an OPTIMADE compliant calculation entry.
+
+    Convert CSV calculation data for a single simulation into an
+    OPTIMADE compliant calculations record.
+
+    arguments:
+        entry: dict() - dict containing CSV calculation entries
+
+    returns:
+        simulation_result: .models.SimulationResult - OPTIMADE calculation
+    """
+    diff_coeff = entry['self_diffusion_coefficient']
+    attr = SimulationResultAttributes(
+        last_modified=int(now()),
+        _salsa_msd_average=entry['MSD_avr'],
+        _salsa_self_diffusion_coeff=diff_coeff,
+        _salsa_heat_capacity=entry['heat_capacity'],
+        _salsa_debye_temperature=entry['debye_temperature'],
+        _salsa_cohesive_energy=entry['cohesive_energy'],
+        _salsa_equilibrium_warning=entry['equilibrium_warning'],
+        _salsa_debye_warning=entry['debye_warning'],
+    )
+
+    return SimulationResult(id=str(uuid.uuid1()), attributes=attr)
+
+
+def get_optimade_calculation_aggregate(entry):
+    """Return an OPTIMADE compliant calculation entry.
+
+    Convert CSV calculation data for an aggregate simulation into an
+    OPTIMADE compliant calculations record.
+
+    arguments:
+        entry: dict() - dict containing CSV calculation entries
+
+    returns:
+        simulation_result: .models.SimulationResult - OPTIMADE calculation
+    """
+    attr = SimulationResultAttributes(
+        last_modified=int(now()),
+        _salsa_lattice_constant=entry['Lattice constant'],
+        _salsa_bulk_modulus=entry['Bulk modulus'],
+        _salsa_error_message=entry['Error message'],
+        # FIXME: This is a list in text format which is not OPTIMADE
+        # compatible. Changing the source data is preferred.
+        # _lindeman_over_time=entry['Lindeman parameter over time'], #
+        _salsa_lindeman_criterion=entry['Lindeman criterion'],
+    )
+
+    return SimulationResult(id=str(uuid.uuid1()), attributes=attr)
+
+
+def get_optimade_calculation(workspace_path, entry):
+    """Get an OPTIMADE calculation entry from simulation output.
+
+    Returns an OPTIMADE compliant calculations entry for a post
+    processed simulation result.
+
+    arguments:
+        workspace_path: str - path to a simulation workspace
+        entry: dict()       - dict containing simulation post process data
+
+    returns:
+        conf_path, calculation_entry: str, .models.SimulationResult -
+            return the path to the simulation configuration json file
+            as well as an OPTIMADE compliant calculations entry
+    """
+    conf_path = (f'{workspace_path}/done_simulations/'
+                 f'{entry["file_name"]}.json')
+    if 'Lattice constant' in entry:
+        if entry['Lattice constant'] == '':
+            return conf_path, get_optimade_calculation_single(entry)
+        else:
+            traj_name = os.path.basename(entry['Trajectory file'])
+            conf_name = f'{os.path.splitext(traj_name)[0]}.json'
+            conf_path = f'{workspace_path}/done_simulations/{conf_name}'
+            return conf_path, get_optimade_calculation_aggregate(entry)
+    else:
+        return conf_path, get_optimade_calculation_single(entry)
+
+
 def get_optimade_data(result_path, workspace_path,
                       base_url='https://example.com'):
     """Get a generator for converting simulation results to OPTIMADE format.
@@ -257,26 +340,12 @@ def get_optimade_data(result_path, workspace_path,
                       generates pairs of an OPTIMADE structure entry
                       with a corresponding OPTIMADE calculation
     """
-    calculations = []
-    structures = []
     with open(result_path, 'r') as f:
         reader = csv.DictReader(f)
         for entry in reader:
-            diff_coeff=entry['self_diffusion_coefficient']
-            attr = SimulationResultAttributes(
-                last_modified=int(now()),
-                _salsa_msd_average=entry['MSD_avr'],
-                _salsa_self_diffusion_coeff=diff_coeff,
-                _salsa_heat_capacity=entry['heat_capacity'],
-                _salsa_debye_temperature=entry['debye_temperature'],
-                _salsa_cohesive_energy=entry['cohesive_energy'],
-                _salsa_equilibrium_warning=entry['equilibrium_warning'],
-                _salsa_debye_warning=entry['debye_warning'],
-            )
-            sim_res = SimulationResult(id=str(uuid.uuid1()), attributes=attr)
+            conf_path, sim_res = get_optimade_calculation(workspace_path,
+                                                          entry)
 
-            conf_path = (f'{workspace_path}/done_simulations/'
-                         f'{entry["file_name"]}.json')
             with open(conf_path, 'r') as conf_file:
                 conf = json.load(conf_file)
             with open(conf['material'], 'rb') as material_file:

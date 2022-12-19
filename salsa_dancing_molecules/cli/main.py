@@ -147,15 +147,10 @@ def main():
     optimade_parser.add_argument('result_csv',
                                  help='Path to simulation result CSV.')
     optimade_parser.add_argument('--json-out',
-                                 help=('Prefix of json OPTIMADE output file.'
-                                       'Default: test_, resulting in '
-                                       'test_calculations.json and '
-                                       'test_structures.json'),
-                                 default='test_')
-    optimade_parser.add_argument('--base-url',
-                                 help=('OPTIMADE server url. '
-                                       'Default: https://example.com'),
-                                 default='https://example.com')
+                                 help=('Path to OPTIMADE output file. '
+                                       'Default: structures.json'
+                                       'structures.json'),
+                                 default='structures.json')
 
     args = parser.parse_args()
 
@@ -189,8 +184,7 @@ def main():
 
     elif 'result_csv' in args:
         from ..optimade import run as optimade_run
-        optimade_run(args.result_csv, args.workspace, args.base_url,
-                     args.json_out)
+        optimade_run(args.result_csv, args.workspace, args.json_out)
 
 
 if __name__ == '__main__':

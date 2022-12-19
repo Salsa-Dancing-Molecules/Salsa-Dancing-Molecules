@@ -1,8 +1,8 @@
 """Module containing adapters for conversions to OPTIMADE formats."""
 
 from .models import (
-    SimulationResult,
-    SimulationResultAttributes,
+    SingleSimulationResultAttributes,
+    AggregateSimulationResultAttributes
 )
 
 from optimade.models import (
@@ -14,6 +14,7 @@ from optimade.models import (
 from ase import Atoms
 
 import csv
+import functools
 import json
 import numpy
 import os
@@ -190,34 +191,67 @@ def get_reduced_formula(atoms):
                     for (symbol, count) in formula_list])
 
 
-def get_optimade_structure(atoms):
-    """Convert an ASE atoms object into an OPTIMADE materials entry.
+def get_optimade_structure(attributes):
+    """Construct an OPTIMADE structure from attributes.
 
-    Takes an ASE atom object and converts it into an OPTIMADE
-    materials entry.
+    Takes a finished SimulationResultAttributes object and turns it
+    into an OPTIMADE structure record.
 
     arguments:
-        atoms: ase.Atoms - atoms object to convert
+        attributes: SimulationResultAttributes - attributes to encapsulate
 
     returns:
         optimade_structure: optimade.models.StructureResource
                             - OPTIMADE materials entry
     """
-    unique_elements = get_unique_elements(atoms)
-    dimension_types = [int(pbc) for pbc in atoms.get_pbc()]
+    return StructureResource(id=str(uuid.uuid1()), attributes=attributes)
 
+
+def get_species_list(atoms):
+    """Get a list of elements present in the atoms object.
+
+    This function returns a list if OPTIMADE species objects to be
+    used in an OPTIMADE structure entry.
+
+    arguments:
+        atoms: ase.Atoms - ASE atoms object
+
+    returns:
+        species_list: list(optimade.models.Species()) - list of
+            OPTIMADE speciec objects
+    """
     species_list = []
     for symbol in get_unique_elements(atoms):
         species_list.append(Species(
             name=symbol,
             chemical_symbols=[symbol],
             concentration=[1.0]))
+    return species_list
 
-    # The OPTIMADE toolkit has internal sanity checks for all these
-    # fields so at the moment, this has no unit test since a unit test
-    # would basically just be checking that the values set in the
-    # fields are the values present in the fields.
-    attributes = StructureResourceAttributes(
+
+def fill_standard_fields(sim_result, atoms):
+    """Fill in required standard OPTIMADE values in SimulationResultAttributes.
+
+    Performs a partial application of the constructor of a
+    SimulationResultAttributes object where standard mandatory values
+    are filled in. The partially applied class is then returned for
+    further initialisation.
+
+    arguments:
+        sim_result: OPTIMADE attribute - an OPTIMADE attribute object
+                                         to partially fill-in
+        atoms: ase.Atoms - atoms used during the simulation
+
+    returns:
+        attributes: SimulationResultAttributes - a partially
+            constructed SimulationResultAttributes with standard
+            OPTIMADE values filled in
+    """
+    unique_elements = get_unique_elements(atoms)
+    dimension_types = [int(pbc) for pbc in atoms.get_pbc()]
+    species_list = get_species_list(atoms)
+    return functools.partial(
+            sim_result,
             last_modified=int(now()),
             elements=unique_elements,
             nelements=len(unique_elements),
@@ -232,69 +266,145 @@ def get_optimade_structure(atoms):
             nsites=atoms.get_global_number_of_atoms(),
             species=species_list,
             species_at_sites=atoms.get_chemical_symbols(),
-            structure_features=[]
+            structure_features=[])
+
+
+def fill_simulation_config(sim_result, atoms, config):
+    """Fill an OPTIMADE structure with simulation configuration info.
+
+    Performs a partial application on sim_result with fields that
+    contain the simulation configuration.
+
+    arguments:
+        sim_result: OPTIMADE attribute - an OPTIMADE attribute object
+                                         to partially fill-in
+        atoms: ase.Atoms - atoms used during the simulation
+
+    returns:
+        partial application of sim_result
+    """
+    potential = config['potential']
+    kim_model = config['kim-model'] if potential == 'openkim' else None
+    target_temperature = None
+    if config['ensemble'] == 'NVT':
+        target_temperature = int(config['target-temperature'])
+    volume_scale = 1
+    if 'volume-scale' in config:
+        volume_scale = float(config['volume-scale'])
+
+    return functools.partial(
+            sim_result,
+            ensemble=config['ensemble'],
+            potential=potential,
+            kim_model=kim_model,
+            initial_temperature=int(config['initial-temperature']),
+            target_temperature=target_temperature,
+            volume_scale=volume_scale,
     )
 
-    return StructureResource(id=str(uuid.uuid1()), attributes=attributes)
 
-
-def get_optimade_calculation_single(entry):
-    """Return an OPTIMADE compliant calculation entry.
+def get_optimade_calculation_single(entry, atoms, config):
+    """Return an OPTIMADE compliant simulation attribute entry.
 
     Convert CSV calculation data for a single simulation into an
-    OPTIMADE compliant calculations record.
+    OPTIMADE compliant attribute record.
 
     arguments:
-        entry: dict() - dict containing CSV calculation entries
+        entry: dict()      - dict containing CSV calculation entries
+        atoms: ase.Atoms() - atoms object used during the simulation
+        config: dict()     - dict containing the simulation
+                             configuration
 
     returns:
-        simulation_result: .models.SimulationResult - OPTIMADE calculation
+        simulation_result: .models.SingleSimulationResultAttributes -
+            OPTIMADE attribute record
     """
     diff_coeff = entry['self_diffusion_coefficient']
-    attr = SimulationResultAttributes(
-        last_modified=int(now()),
-        _salsa_msd_average=entry['MSD_avr'],
-        _salsa_self_diffusion_coeff=diff_coeff,
-        _salsa_heat_capacity=entry['heat_capacity'],
-        _salsa_debye_temperature=entry['debye_temperature'],
-        _salsa_cohesive_energy=entry['cohesive_energy'],
-        _salsa_equilibrium_warning=entry['equilibrium_warning'],
-        _salsa_debye_warning=entry['debye_warning'],
+    attr = fill_standard_fields(SingleSimulationResultAttributes, atoms)
+    attr = fill_simulation_config(attr, atoms, config)
+
+    # The json export does not like if the debye temperature is nan.
+    # Relpace it with None since it is translated to null, which is
+    # okay in the json.
+    debye_temperature = entry['debye_temperature']
+    if debye_temperature == 'nan':
+        debye_temperature = None
+
+    return attr(
+        msd_average=entry['MSD_avr'],
+        self_diffusion_coefficient=diff_coeff,
+        heat_capacity=entry['heat_capacity'],
+        debye_temperature=debye_temperature,
+        cohesive_energy=entry['cohesive_energy'],
+        equilibrium_warning=entry['equilibrium_warning'],
+        debye_warning=entry['debye_warning'],
     )
 
-    return SimulationResult(id=str(uuid.uuid1()), attributes=attr)
 
-
-def get_optimade_calculation_aggregate(entry):
-    """Return an OPTIMADE compliant calculation entry.
+def get_optimade_calculation_aggregate(entry, atoms, config):
+    """Return an OPTIMADE compliant simulation attribute entry.
 
     Convert CSV calculation data for an aggregate simulation into an
-    OPTIMADE compliant calculations record.
+    OPTIMADE compliant attribute record.
 
     arguments:
-        entry: dict() - dict containing CSV calculation entries
+        entry: dict()      - dict containing CSV calculation entries
+        atoms: ase.Atoms() - atoms object used during the simulation
+        config: dict()     - dict containing the simulation
+                             configuration
 
     returns:
-        simulation_result: .models.SimulationResult - OPTIMADE calculation
+        simulation_result: .models.AggregateSimulationResultAttributes
+            OPTIMADE attribute record
     """
-    attr = SimulationResultAttributes(
-        last_modified=int(now()),
-        _salsa_lattice_constant=entry['Lattice constant'],
-        _salsa_bulk_modulus=entry['Bulk modulus'],
-        _salsa_error_message=entry['Error message'],
-        # FIXME: This is a list in text format which is not OPTIMADE
-        # compatible. Changing the source data is preferred.
-        # _lindeman_over_time=entry['Lindeman parameter over time'], #
-        _salsa_lindeman_criterion=entry['Lindeman criterion'],
+    attr = fill_standard_fields(AggregateSimulationResultAttributes, atoms)
+    attr = fill_simulation_config(attr, atoms, config)
+
+    lattice_constant = None
+    try:
+        lattice_constant = float(entry['Lattice constant'])
+    except ValueError:
+        # We might not have a lattice constant. If the material is not
+        # cubic, we output vectors and angles. Skip the value if that
+        # is the case.
+        pass
+
+    if entry['Lindeman criterion'] == '':
+        lindeman_criterion = "False"
+    else:
+        lindeman_criterion = "True"
+
+    return attr(
+        # Salsa specific values below.
+        lattice_constant=lattice_constant,
+        bulk_modulus=entry['Bulk modulus'],
+        lindeman_criterion=lindeman_criterion,
     )
 
-    return SimulationResult(id=str(uuid.uuid1()), attributes=attr)
+
+def load_config(conf_path):
+    """Get material and potential from the simulation configuration.
+
+    arguments:
+        conf_path: str - path to the simulation job json configuration
+
+    returns:
+        material: ase.Atoms, conf: dict() - returns the Atoms object
+            used during the simulation as well as a dictionary
+            containing the simulation configuration
+    """
+    with open(conf_path, 'r') as conf_file:
+        conf = json.load(conf_file)
+    with open(conf['material'], 'rb') as material_file:
+        material = pickle.load(material_file)
+
+    return material, conf
 
 
 def get_optimade_calculation(workspace_path, entry):
     """Get an OPTIMADE calculation entry from simulation output.
 
-    Returns an OPTIMADE compliant calculations entry for a post
+    Returns an OPTIMADE compliant structure entry for a post
     processed simulation result.
 
     arguments:
@@ -302,66 +412,53 @@ def get_optimade_calculation(workspace_path, entry):
         entry: dict()       - dict containing simulation post process data
 
     returns:
-        conf_path, calculation_entry: str, .models.SimulationResult -
-            return the path to the simulation configuration json file
-            as well as an OPTIMADE compliant calculations entry
+        material: ase.Atoms, .models.SimulationResult -
+            return the Atoms object used in the simulation
+            as well as an OPTIMADE compliant structure entry
     """
     conf_path = (f'{workspace_path}/done_simulations/'
                  f'{entry["file_name"]}.json')
     if 'Lattice constant' in entry:
         if entry['Lattice constant'] == '':
-            return conf_path, get_optimade_calculation_single(entry)
+            material, config = load_config(conf_path)
+            return material, get_optimade_calculation_single(entry,
+                                                             material,
+                                                             config)
         else:
             traj_name = os.path.basename(entry['Trajectory file'])
             conf_name = f'{os.path.splitext(traj_name)[0]}.json'
             conf_path = f'{workspace_path}/done_simulations/{conf_name}'
-            return conf_path, get_optimade_calculation_aggregate(entry)
+
+            material, config = load_config(conf_path)
+            return material, get_optimade_calculation_aggregate(entry,
+                                                                material,
+                                                                config)
     else:
-        return conf_path, get_optimade_calculation_single(entry)
+        material, config = load_config(conf_path)
+        return material, get_optimade_calculation_single(entry,
+                                                         material,
+                                                         config)
 
 
-def get_optimade_data(result_path, workspace_path,
-                      base_url='https://example.com'):
+def get_optimade_data(result_path, workspace_path):
     """Get a generator for converting simulation results to OPTIMADE format.
 
     Get a generator that generates OPTIMADE compliant entries from
-    simulation output. The base_url argument is used for generating
-    link references between the different entries and should be set to
-    the URL from which the database will be served.
+    simulation output
 
     arguments:
         result_path: str    - path to a post process results CSV file
         workspace_path: str - path to a simulation workspace
-        base_url: str       - URL from which the OPTIMADE database
-                              will be served
 
     returns:
-        optimade_itr: generator of StructureResource, SimulationResult -
-                      generates pairs of an OPTIMADE structure entry
-                      with a corresponding OPTIMADE calculation
+        optimade_itr: generator of StructureResource -
+                      generates OPTIMADE structure entries
     """
     with open(result_path, 'r') as f:
         reader = csv.DictReader(f)
         for entry in reader:
-            conf_path, sim_res = get_optimade_calculation(workspace_path,
-                                                          entry)
+            material, attributes = get_optimade_calculation(workspace_path,
+                                                            entry)
+            struct = get_optimade_structure(attributes)
 
-            with open(conf_path, 'r') as conf_file:
-                conf = json.load(conf_file)
-            with open(conf['material'], 'rb') as material_file:
-                material = pickle.load(material_file)
-            struct = get_optimade_structure(material)
-
-            struct_link = Link(
-                href=f'{base_url}/structures/{struct.id}',
-                meta={'description': f'Calculation simulation structure.'},
-            )
-            sim_res.links = struct_link
-
-            calc_link = Link(
-                href=f'{base_url}/calculations/{sim_res.id}',
-                meta={'description': f'Calcultion for structure.'},
-            )
-            struct.links = calc_link
-
-            yield struct, sim_res
+            yield struct

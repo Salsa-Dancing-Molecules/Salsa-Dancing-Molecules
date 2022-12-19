@@ -1,102 +1,100 @@
 """OPTIMADE models for describing simulation results."""
-from optimade.models import EntryResource, EntryResourceAttributes
+from optimade.models import (
+    EntryResource,
+    EntryResourceAttributes,
+)
 from optimade.models.utils import (
-        StrictField,
-        SupportLevel,
-        OptimadeField,
+    StrictField,
+    SupportLevel,
+    OptimadeField,
 )
 from typing import Optional
 
 
-class SimulationResultAttributes(EntryResourceAttributes):
+class SimulationConfiguration(EntryResourceAttributes):
+    """Represents the configuration used for a simulation."""
+
+    ensemble: Optional[str] = OptimadeField(
+            ...,
+            description="""Ensemble in which the simulation is performed.""")
+
+    potential: Optional[str] = OptimadeField(
+            ...,
+            description="""Potential used when simulating.""")
+
+    kim_model: Optional[str] = OptimadeField(
+            ...,
+            description="""KIM model used when simulating if potential
+is openkim.""")
+
+    initial_temperature: Optional[int] = OptimadeField(
+            ...,
+            description="""The initial temperature of the material.""",
+            unit="K")
+
+    target_temperature: Optional[int] = OptimadeField(
+            ...,
+            description="""The target temperature of NVT.""",
+            unit="K")
+
+    volume_scale: Optional[float] = OptimadeField(
+            ...,
+            description="""Scale factor of the material.""")
+
+
+class AggregateSimulationResultAttributes(SimulationConfiguration):
+    """Represents the result from aggregated simulations."""
+
+    lattice_constant: Optional[float] = OptimadeField(
+            ...,
+            description="""Lattice constant given as a float.""",
+            unit="Å")
+
+    bulk_modulus: Optional[float] = OptimadeField(
+            ...,
+            description="""Lattice constant given as a float.""",
+            unit="GPa")
+
+    lindeman_criterion: Optional[str] = OptimadeField(
+            ...,
+            description="""True if the lindeman criterion > 0.1.""")
+
+
+class SingleSimulationResultAttributes(SimulationConfiguration):
     """Represents the calculated values of a simulation."""
 
-    _salsa_msd_average: Optional[float] = OptimadeField(
+    msd_average: Optional[float] = OptimadeField(
         ...,
         description="""The average mean square displacement
 given as a float.""",
-        support=SupportLevel.OPTIONAL,
-        queryable=SupportLevel.MUST)
+        unit="Å^2")
 
-    _salsa_self_diffusion_coefficient: Optional[float] = OptimadeField(
+    self_diffusion_coefficient: Optional[float] = OptimadeField(
             ...,
             description="""The self diffusion coefficient given as a float.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
+            unit="Å^2/s")
 
-    _salsa_heat_capacity: Optional[float] = OptimadeField(
+    heat_capacity: Optional[float] = OptimadeField(
             ...,
             description="""The heat capacity given as a float.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
+            unit="Jkg^-1K^-1")
 
-    _salsa_debye_temperature: Optional[float] = OptimadeField(
+    debye_temperature: Optional[float] = OptimadeField(
             ...,
             description="""The debye temperature given as a float.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
+            unit="K")
 
-    _salsa_cohesive_energy: Optional[float] = OptimadeField(
+    cohesive_energy: Optional[float] = OptimadeField(
             ...,
             description="""The cohesive energy given as a float.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
+            unit="eV")
 
-    _salsa_equilibrium_warning: Optional[str] = OptimadeField(
+    equilibrium_warning: Optional[str] = OptimadeField(
             ...,
             description="""Provides a warning if the equilibrium
-might not have been reached.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
+might not have been reached.""")
 
-    _salsa_debye_warning: Optional[str] = OptimadeField(
+    debye_warning: Optional[str] = OptimadeField(
             ...,
             description="""Provides a warning if the debye
-temperature might not be reliable.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
-
-    _salsa_lattice_constant: Optional[float] = OptimadeField(
-            ...,
-            description="""Lattice constant given as a float.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
-
-    _salsa_bulk_modulus: Optional[float] = OptimadeField(
-            ...,
-            description="""Lattice constant given as a float.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
-
-    _salsa_error_message: Optional[str] = OptimadeField(
-            ...,
-            description="""Error message from aggregate calculation.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
-
-    # FIXME: Figure out how to provide the Lindeman parameter.
-    # _salsa_lindeman_over_time: Optional[] = OptimadeField(
-    #        ...,
-    #        description="""Lindeman parameter.""",
-    #        support=SupportLevel.OPTIONAL,
-    #        queryable=SupportLevel.MUST)
-
-    _salsa_lindeman_criterion: Optional[str] = OptimadeField(
-            ...,
-            description="""True if the lindeman criterion > 0.1.""",
-            support=SupportLevel.OPTIONAL,
-            queryable=SupportLevel.MUST)
-
-
-class SimulationResult(EntryResource):
-    """Represents the result of a simulation."""
-
-    type: str = StrictField(
-            "calculations",
-            description="The name of the type of an entry.",
-            regex="^calculations$",
-            support=SupportLevel.MUST,
-            queryable=SupportLevel.MUST,
-    )
-
-    attributes: SimulationResultAttributes
+temperature might not be reliable.""")

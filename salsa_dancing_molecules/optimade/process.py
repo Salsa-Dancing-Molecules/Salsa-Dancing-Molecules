@@ -29,38 +29,26 @@ def to_json(struct):
     return json.dumps(data)
 
 
-def run(result_csv, workspace, base_url, json_out):
+def run(result_csv, workspace, json_out):
     """Generate OPTIMADE compliant json files from simulation results.
 
-    Create the two files '{json_out}calculations.json' and
-    '{json_out}structures.json' with OPTIMADE compliant data.
-
-    The base_url parameter is used for internal references in the
-    database and should be the URL from which the OPTIMADE database is
-    served.
+    Create the files '{json_out}' with OPTIMADE compliant data.
 
     arguments:
         result_csv: str - path to simulation results CSV file
         workspace: str  - path to simulation workspace
-        base_url: str   - URL from which the OPTIMADE database will be
-                          served
-        json_out: str   - prefix to use for generated result files
+        json_out: str   - path to output json file
     """
-    with (open(f'{json_out}structures.json', 'w') as structs,
-          open(f'{json_out}calculations.json', 'w') as calcs):
+    with open(f'{json_out}', 'w') as structs:
         structs.write('[')
-        calcs.write('[')
         first = True
 
-        for struct, calc in get_optimade_data(result_csv, workspace, base_url):
+        for struct in get_optimade_data(result_csv, workspace):
             if not first:
                 structs.write(',')
-                calcs.write(',')
             else:
                 first = False
 
             structs.write(to_json(struct))
-            calcs.write(to_json(calc))
 
         structs.write(']')
-        calcs.write(']')

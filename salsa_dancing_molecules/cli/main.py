@@ -140,6 +140,23 @@ def main():
     volume_parser.add_argument('volume_work_path',
                                help=('Path to workspace directory'))
 
+    optimade_parser = command_parser.add_parser('optimade',
+                                                help='Generate OPTIMADE json.')
+    optimade_parser.add_argument('workspace',
+                                 help='Path to simulation workspace.')
+    optimade_parser.add_argument('result_csv',
+                                 help='Path to simulation result CSV.')
+    optimade_parser.add_argument('--json-out',
+                                 help=('Prefix of json OPTIMADE output file.'
+                                       'Default: test_, resulting in '
+                                       'test_calculations.json and '
+                                       'test_structures.json'),
+                                 default='test_')
+    optimade_parser.add_argument('--base-url',
+                                 help=('OPTIMADE server url. '
+                                       'Default: https://example.com'),
+                                 default='https://example.com')
+
     args = parser.parse_args()
 
     if 'formula' in args:
@@ -169,6 +186,11 @@ def main():
     elif 'volume_work_path' in args:
         from ..volume_process import volume_process
         volume_process.start(args.volume_work_path)
+
+    elif 'result_csv' in args:
+        from ..optimade import run as optimade_run
+        optimade_run(args.result_csv, args.workspace, args.base_url,
+                     args.json_out)
 
 
 if __name__ == '__main__':

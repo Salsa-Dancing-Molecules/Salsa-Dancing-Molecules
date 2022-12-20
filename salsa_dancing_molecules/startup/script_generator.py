@@ -2,7 +2,7 @@
 import os
 
 
-def create_sbatch(job, use_devel, time, nodes, cores, work_path):
+def create_sbatch(job, use_devel, exclusive, time, nodes, cores, work_path):
     """Create an sbatch script and save it to a file to be executed.
 
     Args:
@@ -16,16 +16,18 @@ def create_sbatch(job, use_devel, time, nodes, cores, work_path):
     reservation = ""
     if use_devel:
         reservation = "#SBATCH --reservation devel\n"
+    if exclusive:
+        exclusive_str = "#SBATCH --exclusive\n"
     script = (
         "#!/bin/bash\n"
         "#\n"
         f"#SBATCH -J {job}\n"
-        "#SBATCH -A LiU-compute-2022-29\n" +
+        "#SBATCH -A LiU-compute-2022-29\n"
         f"{reservation}"
         f"#SBATCH -t {time}\n"
         f"#SBATCH -N {nodes}\n"
         f"#SBATCH -n {cores}\n"
-        "#SBATCH --exclusive\n"
+        f"{exclusive_str}"
         "#\n"
         "export NSC_MODULE_SILENT=1\n"
         "export OPENBLAS_NUM_THREADS=1\n"

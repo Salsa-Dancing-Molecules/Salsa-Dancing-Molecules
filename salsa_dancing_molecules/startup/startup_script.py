@@ -82,7 +82,8 @@ def start(args):
     time = args.time if args.time else "error"
     nodes = args.nodes if args.nodes else "error"
     cores = args.cores if args.cores else "error"
+    exclusive = args.exclusive if args.exclusive else "error"
     if "error" in [job, time, nodes, cores]:
         print("Argument(s) missing for sbatch script. No file witll be made.")
     else:
-        create_sbatch(job, use_devel, time, nodes, cores, work_path)
+        create_sbatch(job, use_devel, exclusive, time, nodes, cores, work_path)

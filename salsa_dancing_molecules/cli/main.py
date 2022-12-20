@@ -2,13 +2,6 @@
 import argparse
 import sys
 
-from ..worker_process import worker_process
-from ..simulations import argon, nve
-from ..command_plot import data_plot
-from ..startup import startup_script
-from ..post_process import post_process
-from ..volume_process import volume_process
-
 
 def main():
     """Run the simulation software."""
@@ -150,24 +143,31 @@ def main():
     args = parser.parse_args()
 
     if 'formula' in args:
+        from ..simulations import nve
         nve.run_for_materials(args.formula, args.api_key, args.steps,
                               args.output_file, args.potential, args.repeat)
     elif 'filename' in args:
+        from ..command_plot import data_plot
         data_plot(args.variable, args.filename, args.image_file, args.show)
 
     elif 'steps' in args:
+        from ..simulations import argon
         argon.run(args.steps, args.cell_size, args.output_path)
 
     elif 'work_path' in args:
+        from ..worker_process import worker_process
         worker_process.start(args.work_path)
 
     elif 'config_path' in args:
+        from ..startup import startup_script
         startup_script.start(args)
 
     elif 'post_work_path' in args:
+        from ..post_process import post_process
         post_process.run_post_calculations(args.post_work_path)
 
     elif 'volume_work_path' in args:
+        from ..volume_process import volume_process
         volume_process.start(args.volume_work_path)
 
 

@@ -150,7 +150,10 @@ class MatClient(MPRester):
         saved_atoms = []
 
         if formula.startswith('mp-'):
-            atoms = self.get_atoms_by_id(formula)
+            # We query one material at a time so extract it from the
+            # list that will only contain one element. This could be
+            # improved to query more materials at the same time.
+            atoms = self.get_atoms_by_id(formula)[0]
             name = self._pickle_by_id(formula, atoms, output_dir)
             saved_atoms.append(name)
         else:

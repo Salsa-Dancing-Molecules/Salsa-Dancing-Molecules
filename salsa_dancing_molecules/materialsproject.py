@@ -46,6 +46,31 @@ class MatClient(MPRester):
         ]
         return atoms
 
+    def get_atoms_by_id(self, id):
+        """Get ASE atom objects from a Materialsproject ID.
+
+        arguments:
+            id: str - chemical formula to search for, ex. 'mp-1479'
+
+        returns:
+            list of ASE atom objects
+        """
+        doc_structures = [
+                doc.structure
+                for doc in self.materials.search(
+                    material_ids=id,
+                    all_fields=False,
+                    fields=["structure"])
+        ]
+
+        if len(doc_structures) == 0:
+            raise Exception(f"Material {id} not found!")
+
+        atoms = [
+            AseAtomsAdaptor.get_atoms(struct) for struct in doc_structures
+        ]
+        return atoms
+
     def _pickle(self, atom, output_dir, id=-1):
         """Pickle an atom.
 
@@ -82,6 +107,25 @@ class MatClient(MPRester):
             else:
                 return (False, "")
 
+    def _pickle_by_id(self, mp_id, atom, output_dir):
+        """Pickle an atom to a file called {mp_id}.pickle.
+
+        arguments:
+            mp_id: str      - materialsproject ID
+            atom: ase.Atoms - atoms to pickle
+            output_dir: str - output directory
+
+        returns:
+            name: str - name of the pickle file
+        """
+        name = f"{mp_id}.pickle"
+        path = f"{output_dir}/{name}"
+
+        with open(path, 'xb') as file:
+            pickle.dump(atom, file)
+
+        return name
+
     def pickle_atoms(self, formula, output_dir):
         """Download and pickle a material.
 
@@ -94,7 +138,8 @@ class MatClient(MPRester):
         material.
 
         arguments:
-            formula:    str - chemical formula to search for, ex. 'Li-Fe-O'
+            formula:    str - chemical formula to search for, ex.  'Li-Fe-O',
+                              or a Materialsproject ID, ex 'mp-1479'
             output_dir: str - path to a directory in which to save the
                               atom objects
 
@@ -102,18 +147,24 @@ class MatClient(MPRester):
             saved_atoms: str - list of names of the pickle files
                                saved in output_dir
         """
-        atoms = self.get_atoms(formula)
         saved_atoms = []
-        for atom in atoms:
-            # To avoid overwriting an atom object with identical
-            # chemical formula, append an id that is incremented until
-            # one that is free is found.
-            id = -1
-            success = False
-            while not success:
-                success, name = self._pickle(atom, output_dir, id)
-                id += 1
+
+        if formula.startswith('mp-'):
+            atoms = self.get_atoms_by_id(formula)
+            name = self._pickle_by_id(formula, atoms, output_dir)
             saved_atoms.append(name)
+        else:
+            atoms = self.get_atoms(formula)
+            for atom in atoms:
+                # To avoid overwriting an atom object with identical
+                # chemical formula, append an id that is incremented until
+                # one that is free is found.
+                id = -1
+                success = False
+                while not success:
+                    success, name = self._pickle(atom, output_dir, id)
+                    id += 1
+                saved_atoms.append(name)
 
         return saved_atoms
 

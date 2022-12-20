@@ -106,7 +106,7 @@ def start(path):
         else:
             parameter_list = None
             criterion = None
-        result_dict['Lindeman parameter over time'] = parameter_list
+        result_dict['Lindeman parameter last timestep'] = parameter_list[-1]
         result_dict['Lindeman criterion'] = criterion
         results_list.append(result_dict)
 

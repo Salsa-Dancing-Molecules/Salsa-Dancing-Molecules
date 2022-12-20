@@ -14,12 +14,11 @@ def init_mock():
     # Mock atom attribute and funtion
     atoms.__len__ = Mock(return_value=1)
     atoms.get_temperature.return_value = 1
-    atoms.get_kinetic_energy.return_value = 1
-    atoms.get_total_energy.return_value = 1
+    atoms.get_kinetic_energy.side_effect = [1, 1, 1, 1, 1, 1, 1,
+                                            2, 2, 2, 2, 2, 2, 2, 2]
+    atoms.get_total_energy.side_effect = [1, 1, 1, 1, 1, 1, 1,
+                                          2, 2, 2, 2, 2, 2, 2, 2]
     atoms.get_masses.return_value = [1, 1, 1]
-    atoms.get_potential_energies.return_value = [1, 1, 1]
-    atoms.get_velocities.return_value = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
-    atoms.get_momenta.return_value = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
 
 
 def test_capacity_NVE():
@@ -31,10 +30,10 @@ def test_capacity_NVE():
     mock_mass = 3 * units._amu
     #  caluculated test value was derived with units eV/K, unit_conversion
     # changes it to J/(K*kg)
-    unit_conversion = units._e/mock_mass
-    expected = -1.1518362268490951e-12 * unit_conversion
+    unit_conversion = units._e*units.kB / mock_mass
+    V = 2 / ((units.kB**2)*3)
+    expected = 1.5 * unit_conversion / (1 - 3*V)
     result = capacity_NVE.calculate_NVE_heat_capacity(configs, t0)
-
     assert result == pytest.approx(expected, 0.0001)
 
 
@@ -43,13 +42,12 @@ def test_capacity_NVT():
     init_mock()
     configs = [atoms, atoms, atoms, atoms, atoms, atoms, atoms]
     t0 = 2
-    unit_conversion = units._k/(3*units._amu)
     # Mock funtions
     mock_mass = 3 * units._amu
     # calculated test value was derived with units eV/K, unit_conversion
     #  changes it to J/(K*kg)
-    unit_conversion = units._e/mock_mass
-    expected = 109618.08417520954 * unit_conversion
+    unit_conversion = units._e/(mock_mass*units.kB)
+    expected = 3 * unit_conversion
     result = capacity_NVT.calculate_NVT_heat_capacity(configs, t0)
 
     assert result == pytest.approx(expected, 0.0001)

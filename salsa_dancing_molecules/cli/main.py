@@ -106,7 +106,7 @@ def main():
                                 default="TFYA99",
                                 type=str)
 
-    startup_parser.add_argument('--devel',
+    startup_parser.add_argument('--use_devel',
                                 help=("The type of job to be run is 'devel'."),
                                 action='store_true')
 

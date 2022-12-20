@@ -106,7 +106,7 @@ def main():
                                 default="TFYA99",
                                 type=str)
 
-    startup_parser.add_argument('--use_devel',
+    startup_parser.add_argument('--devel',
                                 help=("The type of job to be run is 'devel'."),
                                 action='store_true')
 
@@ -125,6 +125,10 @@ def main():
                                 help=("Number of cores to be used."),
                                 default="32",
                                 type=str)
+
+    startup_parser.add_argument('--exclusive',
+                                help=("Set flag to run the job as exclusive"),
+                                action='store_true')
 
     startup_parser.add_argument('config_path',
                                 help=('Path to simulation config'))

@@ -52,7 +52,7 @@ class AggregateSimulationResultAttributes(SimulationConfiguration):
 
     bulk_modulus: Optional[float] = OptimadeField(
             ...,
-            description="""Lattice constant given as a float.""",
+            description="""Bulk modulus given as a float.""",
             unit="GPa")
 
     lindeman_criterion: Optional[str] = OptimadeField(
@@ -72,7 +72,7 @@ given as a float.""",
     self_diffusion_coefficient: Optional[float] = OptimadeField(
             ...,
             description="""The self diffusion coefficient given as a float.""",
-            unit="Å^2/s")
+            unit="Å^2s^-1")
 
     heat_capacity: Optional[float] = OptimadeField(
             ...,

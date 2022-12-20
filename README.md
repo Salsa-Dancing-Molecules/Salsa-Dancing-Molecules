@@ -108,3 +108,40 @@ then run
 	pytest
 
 from the top directory.
+
+## OPTIMADE
+
+It is possible to export simulation results as OPTIMADE compatible
+json using the command line interface.
+
+First post process the data, below is an example where
+`/var/tmp/argon_workspace` contains simulation results from a
+simulation using argon.
+
+	salsa-dancing-molecules post_simulation /var/tmp/argon_workspace
+
+NOTE: It is also possible to run `volume_process` if simulations with
+      varying volumes have been performed.
+
+This generates the file
+
+	/var/tmp/argon_workspace/post_process_output/post_process_20-12-22_15_35_16.csv
+
+containing all calculated values. To convert these results to OPTIMADE
+compatible json, do the following
+
+	salsa-dancing-molecules optimade /var/tmp/argon_workspace /var/tmp/argon_workspace/post_process_output/post_process_20-12-22_15_35_16.csv
+
+where the first argument to the optimade command is the path to the
+workspace and the second argument is the path to the datafile you wish
+to process. By default, the output will be available as
+`structures.json` in the current working directory.
+
+Importing the data into Mongodb can then be performed by doing
+
+	mongoimport --jsonArray --db optimade --collection structures --file structures.json
+
+which imports the data into a database called optimade and a
+collection called structures. See
+https://github.com/Salsa-Dancing-Molecules/optimade-python-tools for
+how to serve the data from the database.

@@ -40,10 +40,8 @@ def calculate_NVE_heat_capacity(config, t0):
     T = average(t0, temperatures)[-1]
     square_of_mean = get_square_of_mean_kin(config, t0)[-1]
     mean_square = get_mean_square_of_kin(config, t0)[-1]
-    # return is in eV/(K * kg) so we need a unit conversion to change it to
-    # J/(K * kg)
-    variance = mean_square - square_of_mean
-    conversion = units._e * 1.5 * units.kB * N
-    C_v_J = conversion * ((1 - (variance / (1.5 * N * (units.kB*T)**2)))**(-1))
 
-    return C_v_J/mass
+    variance = mean_square - square_of_mean
+    conversion = units._e * 1.5 * units.kB * N / mass
+
+    return conversion * ((1 - (variance / (1.5 * N * (units.kB*T)**2)))**(-1))

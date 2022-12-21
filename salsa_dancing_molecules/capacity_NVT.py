@@ -37,9 +37,10 @@ def calculate_NVT_heat_capacity(config, t0):
     temperatures = [atom.get_temperature() for atom in config]
     # equilibrium time average
     T = average(t0, temperatures)[-1]
-    squar_of_mean = get_square_of_mean_tote(config, t0)[-1]
-    mean_squar = get_mean_square_of_tote(config, t0)[-1]
-    # return is in eV/(K * kg) so we need a unit conversion to change it to
-    # J/(K * kg)
+    square_of_mean = get_square_of_mean_tote(config, t0)[-1]
+    mean_square = get_mean_square_of_tote(config, t0)[-1]
+
     conversion = units._e / mass
-    return conversion*(mean_squar - squar_of_mean) / (units.kB*(T**2))
+    variance = mean_square - square_of_mean
+
+    return conversion * variance / (units.kB*(T**2))

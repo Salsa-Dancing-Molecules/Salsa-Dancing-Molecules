@@ -36,21 +36,14 @@ def calculate_NVE_heat_capacity(config, t0):
     N = len(a)
     mass = sum(a.get_masses())*units._amu  # change mass from u to kg
     temperatures = [atom.get_temperature() for atom in config]
-    # equilibrium time average of resp.
-    print(f"t0 = {t0}")
-    print(f"t_max = {len(config)}")
+    # equilibrium time average
     T = average(t0, temperatures)[-1]
     square_of_mean = get_square_of_mean_kin(config, t0)[-1]
     mean_square = get_mean_square_of_kin(config, t0)[-1]
     # return is in eV/(K * kg) so we need a unit conversion to change it to
     # J/(K * kg)
-    print(f"kinetic = {a.get_kinetic_energy()}")
-    print(f"N = {N}")
-    print('mean square',mean_square, 'sqr of mean', square_of_mean, 'Diff: ', mean_square-square_of_mean)
-    eV_to_J = units._e
     variance = mean_square - square_of_mean
-    C_v = ((3 * units.kB)/2) * N * ((1 - (2 * variance / (3 * N * units.kB**2 * T**2)))**(-1))
-    C_v_J = C_v * eV_to_J
-    print(f"C_v = {C_v}, mass = {mass}, C_v to J = {C_v_J}, C_v_J/mass = {C_v_J/mass}")
+    conversion = units._e * 1.5 * units.kB * N
+    C_v_J = conversion * ((1 - (variance / (1.5 * N * (units.kB*T)**2)))**(-1))
 
     return C_v_J/mass

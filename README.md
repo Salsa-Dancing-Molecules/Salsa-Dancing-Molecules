@@ -198,19 +198,19 @@ steps
 	Arg:    Mandatory
 	Type:   Integer or list of integers
 	Desc:   Number of timesteps for the simulation, 1 timestep=1fs
-use-asap = False
+use-asap
 
 	Arg:    Mandatory
 	Type:   Boolean or list of booleans
 	Desc:   True if the user want to use Asap, otherwise False
-volume-scale = (a,b,c) 
+volume-scale
 
 	Arg:    Optional
 	Type:   Syntax, a,b: float and c: integer
 	Desc:   A uniformed interval, [a-b, a+b], is generated with c: number of uniformly 
 	spaced samples. The volume-scale scales the volume by a factor. If factor is 1: no 
 	change in volume, if  <1: volume decreases and if  >1: volume decreases. 
-pbc = True
+pbc
 
 	Arg:    Optional
 	Type:   Boolean or list of booleans
@@ -230,6 +230,10 @@ To run a simple argon example with a cell size of [5,5,5] in 1000 femtoseconds a
 	salsa-dancing-molecules run 1000 simulation_data
 then a trajceory file will be created named simulation_data.traj containing all the trajectories during the simualtion and the data about the material propertires will be stored in a file called simualtion_data.csv. 
 
+For help write: 
+	
+	salsa-dancing-molecules run -h
+
 ## Visualisation of data
 Let the file containing the material properties from a simulation be named simulation_data.csv. To visualise the data generated from the simulation, do the following,
 
@@ -241,7 +245,24 @@ If you want to generate a plot from the terminal then write:
 	
 If you want to investigate a single specific property of the simulation: Ekin, Epot, Temp or Press. You write the follwoing:
 
-	salsa-dancing-molecules plot simulation_data.csv singleImgae.png Ekin --show
+	salsa-dancing-molecules plot simulation_data.csv singleImage.png Ekin --show
 
-## To run on the supercomputer
-återstår
+For help write: 
+	
+	salsa-dancing-molecules plot -h
+
+## Running a simulation on the supercomputer
+Suppose that the configuration file contains the information about the materials of interest. In this example, X is the api-key for the materials (you can generate the key by logging in to: https://materialsproject.org/ ) and simulation_config.conf is the configuration file. To create the necessary files for the supercomputer write the following: 
+
+	salsa-dancing-molecules startup --api-key X --time 05:00:00 simulation_config.conf 
+	
+Then write: 
+
+	sbatch run_workers.q
+
+And the batch job will be submitted to the supercomputer. Data on the material properties will be saved in the folder done_simulations. 
+
+For help write: 
+	
+	salsa-dancing-molecules startup -h
+	

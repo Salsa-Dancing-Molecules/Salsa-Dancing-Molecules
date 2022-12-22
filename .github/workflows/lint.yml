@@ -20,7 +20,7 @@ jobs:
           pip install pydocstyle pycodestyle
       - name: Running pycodestyle
         run: |
-          pycodestyle $(git ls-files '*.py')
+          pycodestyle $(git ls-files '*.py' | grep -v 'docs/')
       - name: Running pydocstyle
         run: |
-          pydocstyle $(git ls-files '*.py')
+          pydocstyle $(git ls-files '*.py' | grep -v 'docs/')

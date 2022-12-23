@@ -1,0 +1,8 @@
+sphinx
+sphinx_rtd_theme
+ase
+asap3
+mp_api
+mpcontribs-client
+pymbar
+optimade

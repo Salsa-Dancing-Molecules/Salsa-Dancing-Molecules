@@ -8,10 +8,14 @@ cohesive energy (in eV/atom)
 
 from ase.units import kJ
 from ase.eos import EquationOfState
-from asap3 import Trajectory
 import numpy as np
 import os
 from .equilibrium import get_equilibrium
+
+try:
+    from asap3 import Trajectory
+except ImportError:
+    print("asap3 import failed. This should only happen when building docs.")
 
 
 def get_bulk_properties(traj_list, ensemble):

@@ -1,6 +1,9 @@
 """Calculate cohesive energy."""
 
-from asap3 import Trajectory
+try:
+    from asap3 import Trajectory
+except ImportError:
+    print("asap3 import failed. This should only happen when building docs.")
 
 
 def get_cohesive_energy(traj_file, t0):

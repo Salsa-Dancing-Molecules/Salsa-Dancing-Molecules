@@ -4,8 +4,12 @@ from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
 from ase.md.langevin import Langevin
 from ase import units
-from asap3 import Trajectory
 from ..variables import Variables
+
+try:
+    from asap3 import Trajectory
+except ImportError:
+    print("asap3 import failed. This should only happen when building docs.")
 
 
 def choose_potential(potential, sim_info, use_asap, atoms):

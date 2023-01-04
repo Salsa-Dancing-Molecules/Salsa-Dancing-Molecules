@@ -14,7 +14,11 @@ from ..bulk_properties import get_bulk_properties
 from ..lindemann import get_lindemann_parameter
 from ..equilibrium import get_equilibrium
 from datetime import datetime
-from asap3 import Trajectory
+
+try:
+    from asap3 import Trajectory
+except ImportError:
+    print("asap3 import failed. This should only happen when building docs.")
 
 
 def group_by_volume(sim_info_list):

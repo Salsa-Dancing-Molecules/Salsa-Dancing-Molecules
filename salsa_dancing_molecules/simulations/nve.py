@@ -3,10 +3,14 @@
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
 from ase import units
-from asap3 import Trajectory, AsapError
 from ..variables import Variables
 from ..materialsproject import MatClient
 from ..lennardjonesparse import parse_lj_params
+
+try:
+    from asap3 import Trajectory
+except ImportError:
+    print("asap3 import failed. This should only happen when building docs.")
 
 
 def run_for_materials(formula, api_key, steps, output_path,

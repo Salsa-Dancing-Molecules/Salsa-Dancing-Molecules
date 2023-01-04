@@ -10,7 +10,7 @@ Welcome to Salsa Dancing Molecules's documentation!
    :maxdepth: 8 
    :caption: Contents:
 
-   api
+   modules
 
 
 Indices and tables

@@ -6,3 +6,4 @@ mp_api
 mpcontribs-client
 pymbar
 optimade
+pytest

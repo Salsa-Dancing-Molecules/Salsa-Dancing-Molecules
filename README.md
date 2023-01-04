@@ -129,8 +129,8 @@ For more information regarding each command and their positional - or optional a
 	salsa-dancing-molecules run -h
 
 where the ouput of this command will generating all the neccessary information regarding the command. 
-# How to fill in the JSON file
-An example with documentation to the JSON file can be found in ...\Salsa-Dancing-Molecules\example_simulation\example.conf. A description of each argument is given below:
+# How to fill in the config file
+An example with documentation to the config file can be found in ...\Salsa-Dancing-Molecules\example_simulation\example.conf. A description of each argument is given below:
 
 material
 

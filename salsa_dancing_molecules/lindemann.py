@@ -2,7 +2,11 @@
 
 from .mean_square_displacement import calculate_msd
 import numpy as np
-from asap3 import Trajectory
+
+try:
+    from asap3 import Trajectory
+except ImportError:
+    print("asap3 import failed. This should only happen when building docs.")
 
 
 def get_lindemann_parameter(traj, a, t0):

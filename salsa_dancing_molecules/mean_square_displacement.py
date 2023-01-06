@@ -5,7 +5,7 @@ import numpy as np
 from .average import average
 
 
-def get_msd(traj_file, t0, reference="final"):
+def get_msd(traj_file, t0, reference="initial"):
     """
     Read trajectory file and call calculation function.
 
@@ -13,27 +13,27 @@ def get_msd(traj_file, t0, reference="final"):
         traj_file: str         - trajectory file
         t0: int                - timestep when equilibrium starts
         reference: str or None - which atom to be used as reference,can be
-                                 'initial' or 'final', default is 'final'.
+                                 'initial' or 'final', default is 'initial'.
 
     return:
         mean square displacement - list
 
-    If " reference = "initial" " is included the first atom positions will be
-    used as reference. Otherwise refernce is set to the last atom positions.
+    If " reference = "final" " is included the last atom positions will be
+    used as reference. Otherwise refernce is set to the first atom positions.
     """
     configs = Trajectory(traj_file)
 
     return calculate_msd(configs, t0, reference)
 
 
-def calculate_msd(configs, t0, reference="final"):
+def calculate_msd(configs, t0, reference="initial"):
     """
     Calculate the mean square dispalcement for a trajectory file as a list.
 
     arguments:
         configs: ase.io.trajectory.Trajectory - traj file containg atom-obj.
         reference: str or None - which atom to be used as reference,can be
-                                 'initial' or 'final', default is 'final'.
+                                 'initial' or 'final', default is 'initial'.
 
     return:
         MSD: list     - means square displacement

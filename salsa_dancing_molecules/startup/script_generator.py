@@ -14,6 +14,7 @@ def create_sbatch(job, use_devel, exclusive, time, nodes, cores, work_path):
         work_path: string - path to workspace directory.
     """
     reservation = ""
+    exclusive_str = ""
     if use_devel:
         reservation = "#SBATCH --reservation devel\n"
     if exclusive:

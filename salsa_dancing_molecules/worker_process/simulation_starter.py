@@ -1,6 +1,10 @@
 """Module for determining which simulation program to be used."""
 from ..simulations.simulation import run
-from asap3 import AsapError
+
+try:
+    from asap3 import Trajectory
+except ImportError:
+    print("asap3 import failed. This should only happen when building docs.")
 
 
 def start_simulation(sim_info, atoms):

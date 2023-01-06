@@ -22,4 +22,4 @@ def get_pressure(atoms):
 
     return ((len(atoms)*units._k*get_temperature(atoms) /
             ((a_to_m**3)*atoms.get_volume()) +
-            (1/(3*(a_to_m**2)*atoms.get_volume()))*dot_product))
+            (1/(3*(a_to_m**3)*atoms.get_volume()))*units._e*dot_product))

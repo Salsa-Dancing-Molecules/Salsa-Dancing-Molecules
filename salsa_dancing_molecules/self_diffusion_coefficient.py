@@ -41,7 +41,7 @@ def calculate_self_diffusion_coefficient(MSD, t0):
     slope.
 
     """
-    t = len(MSD)
+    t = len(MSD)-t0
     self_diffusion_coefficient = (MSD[-1] - MSD[t0])/(6*t)
 
     return self_diffusion_coefficient

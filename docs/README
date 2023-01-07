@@ -1,0 +1,11 @@
+# Building documentation
+
+Install the requirements
+
+	pip install -r requirements-docs.txt
+
+Generate the documentation
+
+	make html
+
+The built documentation will then be available in `_build`.

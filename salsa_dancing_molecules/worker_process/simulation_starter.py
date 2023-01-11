@@ -2,7 +2,7 @@
 from ..simulations.simulation import run
 
 try:
-    from asap3 import Trajectory
+    from asap3 import Trajectory, AsapError
 except ImportError:
     print("asap3 import failed. This should only happen when building docs.")
 

@@ -43,8 +43,8 @@ def draw_four_scatter_plots(time_step, y_list, filename, show):
     ax1.set_ylabel('(eV)')
     ax1.legend()
 
-    ax2.scatter(time_step, y_list[4], s=1)
-    ax2.set_title('Specific Heat Capacity NVE')
+    ax2.scatter(time_step, y_list[0], s=1)
+    ax2.set_title('Potential Energy')
     ax2.set_xlabel('Timestep N (fs)')
     ax2.set_ylabel('( J/[K kg] )')
 

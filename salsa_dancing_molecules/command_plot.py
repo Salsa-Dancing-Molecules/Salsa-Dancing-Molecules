@@ -23,7 +23,6 @@ def data_plot(Q='-', filename='simulation_data.csv',
     potential = []
     pressure = []
     temperature = []
-    heat_capacity = []
 
     with open(filename, 'r') as csv_file:
         data = csv.DictReader(csv_file)
@@ -33,8 +32,6 @@ def data_plot(Q='-', filename='simulation_data.csv',
             kinetic.append(float(row['Kinetic Energy (eV)']))
             pressure.append(float(row['Pressure (Pa)']))
             temperature.append(float(row['Temperature (K)']))
-            heat_capacity.append(float(
-                row['Specific Heat Capacity NVE (J/[K kg])']))
             time_step.append(float(row['Time (fs)']))
 
     if Q != '-':
@@ -50,9 +47,6 @@ def data_plot(Q='-', filename='simulation_data.csv',
         elif Q == 'Temp':
             draw_scatter_plot(time_step, temperature,
                               '(fs)', '(K)', newfile, show)
-        elif Q == 'cnve':
-            draw_scatter_plot(time_step, heat_capacity,
-                              '(fs)', '( J/[K kg] )', newfile, show)
         else:
             print('Unknown command, try agian. For help use -h or --help ')
     else:
@@ -62,5 +56,4 @@ def data_plot(Q='-', filename='simulation_data.csv',
             kinetic,
             pressure,
             temperature,
-            heat_capacity,
         ], newfile, show)

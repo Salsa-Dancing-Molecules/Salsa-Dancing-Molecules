@@ -8,7 +8,7 @@ from ..materialsproject import MatClient
 from ..lennardjonesparse import parse_lj_params
 
 try:
-    from asap3 import Trajectory
+    from asap3 import Trajectory, AsapError
 except ImportError:
     print("asap3 import failed. This should only happen when building docs.")
 

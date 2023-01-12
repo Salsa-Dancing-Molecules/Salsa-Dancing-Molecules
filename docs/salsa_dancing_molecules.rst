@@ -9,6 +9,7 @@ Subpackages
 
    salsa_dancing_molecules.cli
    salsa_dancing_molecules.optimade
+   salsa_dancing_molecules.post_process
    salsa_dancing_molecules.simulations
    salsa_dancing_molecules.startup
    salsa_dancing_molecules.third_party
